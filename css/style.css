@@ -344,7 +344,7 @@ p { margin-bottom: 1rem; color: var(--texte-clair); }
 
 /* Mobile nav */
 .mobile-menu {
-  display: none;
+  display: flex;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: var(--marine);
@@ -354,8 +354,11 @@ p { margin-bottom: 1rem; color: var(--texte-clair); }
   gap: 0.5rem;
   overflow-y: auto;
   padding-top: 5rem;
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+  visibility: hidden;
 }
-.mobile-menu.open { display: flex; }
+.mobile-menu.open { transform: translateX(0); visibility: visible; }
 .mobile-menu a {
   color: var(--blanc);
   font-family: 'Montserrat', sans-serif;
@@ -2715,3 +2718,169 @@ body::after {
   .navbar { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
   .hero::after { opacity: .5; }
 }
+
+/* ============================================================
+   RESPONSIVE MOBILE & TABLETTE — Complet
+   ============================================================ */
+
+/* ── Tablette (≤ 900px) — améliorations supplémentaires ── */
+@media (max-width: 900px) {
+  .section { padding: 4rem 0; }
+  .container { padding: 0 1.25rem; }
+
+  /* Page header */
+  .page-header { padding: 6rem 0 3rem; }
+  .page-header h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); }
+
+  /* Section titles */
+  .section-title { font-size: clamp(1.6rem, 4.5vw, 2.4rem); }
+
+  /* CTA banner */
+  .cta-banner { padding: 3rem 1.5rem; text-align: center; }
+  .cta-banner h2 { font-size: clamp(1.4rem, 4vw, 2rem); }
+  .cta-banner-actions { flex-direction: column; align-items: center; gap: .75rem; }
+
+  /* Footer */
+  .footer { padding: 3rem 0 1.5rem; }
+  .footer-bottom { flex-direction: column; gap: .75rem; text-align: center; }
+
+  /* Services page */
+  .service-detail-grid { grid-template-columns: 1fr; }
+
+  /* Timeline — passe en colonne simple */
+  .timeline-v2::before { left: 20px; }
+  .tl-item { grid-template-columns: 40px 1fr; gap: 1rem; }
+  .tl-right, .tl-left { grid-column: 2; text-align: left; }
+  .tl-dot { width: 40px; height: 40px; font-size: .85rem; }
+  .tl-card { padding: 1.25rem; }
+  .tl-card::before { display: none !important; }
+}
+
+/* ── Grand téléphone (≤ 600px) ──────────────────────────── */
+@media (max-width: 600px) {
+  .section { padding: 3rem 0; }
+  .container { padding: 0 1rem; }
+
+  /* Typographie adaptée */
+  h2 { font-size: clamp(1.4rem, 5.5vw, 2rem); }
+  h3 { font-size: clamp(1.1rem, 4vw, 1.4rem); }
+
+  /* Navbar */
+  .hamburger { width: 44px; height: 44px; }
+  .navbar-logo { height: 36px; }
+
+  /* Buttons — touch-friendly */
+  .btn { min-height: 44px; padding: .7rem 1.4rem; font-size: .9rem; }
+  .btn-hero { padding: .85rem 1.6rem !important; width: 100%; justify-content: center; }
+  .btn-ghost { width: 100%; justify-content: center; }
+  .hero-cta-row { flex-direction: column; gap: .75rem; }
+
+  /* Hero KPIs */
+  .kpi-item strong { font-size: 1.6rem; }
+
+  /* Chips du globe cachées */
+  .hv-chip { display: none; }
+
+  /* Cards */
+  .service-card, .blog-card, .portfolio-card, .testimonial-card { padding: 1.25rem; }
+  .stat-card { padding: 1.5rem 1rem; }
+  .stat-number { font-size: 2rem; }
+
+  /* Contact form */
+  .contact-card { padding: 1.5rem; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea { font-size: 16px; /* empêche le zoom iOS */ }
+
+  /* FAQ */
+  .faq-question { padding: 1rem 1.25rem; font-size: .88rem; }
+  .faq-answer { padding: 1rem 1.25rem; }
+
+  /* Footer */
+  .footer-grid { gap: 1.5rem; }
+  .footer-bottom { font-size: .78rem; }
+
+  /* Section badge */
+  .badge { font-size: .7rem; }
+
+  /* Mobile menu */
+  .mobile-menu a { font-size: 1rem; padding: .9rem 1.25rem; min-height: 44px; }
+
+  /* Page header */
+  .page-header { padding: 5.5rem 0 2.5rem; }
+
+  /* About features */
+  .about-feature { padding: .75rem; gap: .75rem; }
+  .about-feature-icon { width: 40px; height: 40px; font-size: 1rem; }
+
+  /* Process */
+  .process-card { padding: 1.25rem; }
+  .process-num { width: 48px; height: 48px; font-size: 1.1rem; }
+
+  /* Portfolio filters */
+  .portfolio-filters { gap: .5rem; }
+  .filter-btn { padding: .45rem 1rem; font-size: .78rem; }
+
+  /* Geo zones */
+  .geo-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── Téléphone moyen (≤ 480px) ──────────────────────────── */
+@media (max-width: 480px) {
+  /* Cacher complètement le globe — trop lourd sur petit écran */
+  .hero-visual-new { display: none; }
+  .hero-layout { padding-top: 6rem; padding-bottom: 3.5rem; }
+  .hero-title { font-size: clamp(1.9rem, 8.5vw, 2.6rem); }
+  .hero-desc { font-size: .95rem; }
+  .hero-kpis { gap: .5rem; }
+  .kpi-item { padding: 0 .6rem; }
+  .kpi-item strong { font-size: 1.4rem; }
+  .kpi-item span { font-size: .65rem; }
+
+  /* Sections */
+  .section { padding: 2.5rem 0; }
+
+  /* Cards en largeur pleine */
+  .blog-card, .portfolio-card { border-radius: 12px; }
+
+  /* Stats */
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .stat-number { font-size: 1.8rem; }
+
+  /* Témoignages */
+  .testimonial-card { padding: 1.25rem 1rem; }
+  .testimonial-avatar { width: 44px; height: 44px; }
+
+  /* Footer */
+  .footer-grid { grid-template-columns: 1fr; }
+
+  /* CTA Banner */
+  .cta-banner h2 { font-size: 1.3rem; }
+  .cta-banner p { font-size: .9rem; }
+}
+
+/* ── Petit téléphone (≤ 360px) ──────────────────────────── */
+@media (max-width: 360px) {
+  .container { padding: 0 .85rem; }
+  .hero-title { font-size: 1.75rem; }
+  .navbar-logo { height: 30px; }
+  .btn { font-size: .85rem; padding: .65rem 1.1rem; }
+  .kpi-item strong { font-size: 1.3rem; }
+  .section-title { font-size: 1.3rem; }
+  .service-card h3 { font-size: 1rem; }
+  .footer-grid { gap: 1.25rem; }
+}
+
+/* ── Tablette paysage (768px–1024px) ────────────────────── */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+  .blog-grid { grid-template-columns: repeat(2, 1fr); }
+  .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+  .team-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-title { font-size: clamp(2rem, 4.5vw, 3.2rem); }
+}
+
+/* ── Empêcher débordement horizontal global ─────────────── */
+html, body { overflow-x: hidden; max-width: 100vw; }
+.hero, .section, .page-header, footer, .cta-banner { overflow-x: hidden; }
+img, video, iframe { max-width: 100%; }
