@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nous Contacter | Mosaïc International — N'Djaména, Tchad</title>
+  <meta name="description" content="Contactez Mosaïc International pour vos besoins en logistique, transit douanier, import/export, télécom et génie civil au Tchad et en Afrique Centrale. Réponse sous 24h.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .contact-page-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .contact-map-placeholder { width: 100%; height: 320px; border-radius: 12px; border: 1px solid var(--gris); overflow: hidden; margin-top: 2rem; position: relative; box-shadow: var(--ombre); }
+    .contact-map-placeholder img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+    .contact-map-placeholder:hover img { transform: scale(1.06); }
+    .contact-map-caption { position: absolute; inset: auto 1rem 1rem 1rem; display: flex; align-items: center; gap: 0.75rem; background: rgba(26,26,46,0.62); color: white; border: 1px solid rgba(255,255,255,0.14); backdrop-filter: blur(8px); border-radius: 12px; padding: 0.85rem 1rem; }
+    .contact-map-caption i { font-size: 1.2rem; color: var(--or); }
+    .contact-map-caption p { font-size: 0.85rem; margin: 0; color: rgba(255,255,255,0.9); }
+    .social-contact-links {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .social-contact-links a {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: var(--gris-clair);
+      border: 1px solid var(--gris);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--texte-clair);
+      font-size: 1rem;
+      transition: all var(--transition);
+    }
+    .social-contact-links a:hover { background: var(--violet); color: var(--blanc); border-color: var(--violet); }
+    @media (max-width: 900px) {
+      .contact-page-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img src="images/cropped-LOGO-moaic.png" alt="Mosaïc International" class="navbar-logo">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Accueil</a></li>
+        <li class="nav-dropdown">
+          <a href="services.html">Nos Services <i class="fas fa-chevron-down fa-xs"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="services.html#logistique"><i class="fas fa-truck"></i> Logistique & Transport</a></li>
+            <li><a href="services.html#transit"><i class="fas fa-file-alt"></i> Transit & Douane</a></li>
+            <li><a href="services.html#import-export"><i class="fas fa-ship"></i> Import / Export</a></li>
+            <li><a href="services.html#telecom"><i class="fas fa-satellite-dish"></i> Réseaux Télécom</a></li>
+            <li><a href="services.html#genie-civil"><i class="fas fa-hard-hat"></i> Génie Civil</a></li>
+            <li><a href="services.html#agrobusiness"><i class="fas fa-seedling"></i> Agrobusiness</a></li>
+          </ul>
+        </li>
+        <li><a href="a-propos.html">À Propos</a></li>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="actualites.html">Actualités</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li class="nav-cta"><a href="contact.html" class="btn btn-violet active">Nous Contacter</a></li>
+      </ul>
+      <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="mobile-menu">
+    <button class="mobile-menu-close"><i class="fas fa-times"></i></button>
+    <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+    <a href="services.html"><i class="fas fa-cogs"></i> Nos Services</a>
+    <a href="a-propos.html"><i class="fas fa-info-circle"></i> À Propos</a>
+    <a href="portfolio.html"><i class="fas fa-briefcase"></i> Portfolio</a>
+    <a href="actualites.html"><i class="fas fa-newspaper"></i> Actualités</a>
+    <a href="faq.html"><i class="fas fa-question-circle"></i> FAQ</a>
+    <a href="contact.html" style="background: rgba(240,165,0,0.15); color: #F0A500; margin-top: 1rem;"><i class="fas fa-envelope"></i> Nous Contacter</a>
+  </div>
+
+  <div class="page-header">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Fil d'Ariane">
+        <a href="index.html">Accueil</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>Nous Contacter</span>
+      </nav>
+      <h1>Nous Contacter</h1>
+      <p>Discutons de votre projet. Notre équipe d'experts répond à toutes vos demandes sous 24 heures ouvrées.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+
+      <!-- Bandeau de confiance -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 4rem;" data-animate>
+        <div style="text-align: center; padding: 1.25rem; background: var(--gris-clair); border-radius: 12px; border: 1px solid var(--gris);">
+          <i class="fas fa-clock" style="font-size: 1.5rem; color: var(--violet); margin-bottom: 0.5rem; display: block;"></i>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--marine); margin-bottom: 0.25rem;">Réponse rapide</div>
+          <div style="font-size: 0.8rem; color: var(--texte-clair);">Sous 24h ouvrées</div>
+        </div>
+        <div style="text-align: center; padding: 1.25rem; background: var(--gris-clair); border-radius: 12px; border: 1px solid var(--gris);">
+          <i class="fas fa-user-tie" style="font-size: 1.5rem; color: var(--violet); margin-bottom: 0.5rem; display: block;"></i>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--marine); margin-bottom: 0.25rem;">Expert dédié</div>
+          <div style="font-size: 0.8rem; color: var(--texte-clair);">Interlocuteur unique</div>
+        </div>
+        <div style="text-align: center; padding: 1.25rem; background: var(--gris-clair); border-radius: 12px; border: 1px solid var(--gris);">
+          <i class="fas fa-file-invoice" style="font-size: 1.5rem; color: var(--violet); margin-bottom: 0.5rem; display: block;"></i>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--marine); margin-bottom: 0.25rem;">Devis gratuit</div>
+          <div style="font-size: 0.8rem; color: var(--texte-clair);">Sans engagement</div>
+        </div>
+        <div style="text-align: center; padding: 1.25rem; background: var(--gris-clair); border-radius: 12px; border: 1px solid var(--gris);">
+          <i class="fas fa-shield-alt" style="font-size: 1.5rem; color: var(--violet); margin-bottom: 0.5rem; display: block;"></i>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--marine); margin-bottom: 0.25rem;">Confidentialité</div>
+          <div style="font-size: 0.8rem; color: var(--texte-clair);">Données protégées</div>
+        </div>
+      </div>
+
+      <div class="contact-page-grid">
+
+        <!-- Informations de contact -->
+        <div data-animate>
+          <span class="badge badge-violet">Nos coordonnées</span>
+          <h2 style="margin-top: 1rem; margin-bottom: 1.5rem;">Retrouvez-nous</h2>
+
+          <div class="contact-items">
+            <div class="contact-item">
+              <div class="contact-item-icon"><i class="fas fa-map-marker-alt"></i></div>
+              <div>
+                <h4>Siège social</h4>
+                <p>N'Djaména, République du Tchad</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-item-icon"><i class="fas fa-map-marker-alt"></i></div>
+              <div>
+                <h4>Bureau régional</h4>
+                <p>Douala, République du Cameroun</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-item-icon"><i class="fas fa-phone"></i></div>
+              <div>
+                <h4>Téléphone principal</h4>
+                <p><a href="tel:+23562686812">+235 62 68 68 12</a></p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-item-icon"><i class="fab fa-whatsapp"></i></div>
+              <div>
+                <h4>WhatsApp</h4>
+                <p><a href="https://wa.me/23562686812" target="_blank" rel="noopener">+235 62 68 68 12</a></p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-item-icon"><i class="fas fa-envelope"></i></div>
+              <div>
+                <h4>Email général</h4>
+                <p><a href="mailto:contact@mozaikinternational.com">contact@mozaikinternational.com</a></p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-item-icon"><i class="fas fa-clock"></i></div>
+              <div>
+                <h4>Horaires d'ouverture</h4>
+                <p>Lundi – Samedi : 07h00 – 18h00<br><small style="color: var(--texte-clair); font-weight: 400;">Urgences 7j/7 pour les clients sous contrat</small></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Réseaux sociaux -->
+          <div style="margin-top: 2rem;">
+            <p style="font-weight: 700; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: var(--marine); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em;">Suivez-nous</p>
+            <div class="social-contact-links">
+              <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" aria-label="Twitter / X"><i class="fab fa-x-twitter"></i></a>
+              <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+              <a href="https://wa.me/23562686812" target="_blank" rel="noopener" aria-label="WhatsApp" style="background: #25D366; border-color: #25D366; color: white;"><i class="fab fa-whatsapp"></i></a>
+            </div>
+          </div>
+
+          <!-- Carte placeholder -->
+          <div class="contact-map-placeholder">
+            <img src="images/Equipe-de-technicien-de-Mosaic-sur-le-terrain-1024x768.png" alt="Equipe Mosaic International disponible pour vous accompagner">
+            <div class="contact-map-caption">
+              <i class="fas fa-map-marked-alt"></i>
+              <p>Présence terrain à N'Djaména et dans la zone CEMAC</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulaire de contact -->
+        <div data-animate data-delay="200">
+          <div class="contact-form-wrap">
+            <h3>Envoyez-nous votre demande</h3>
+            <p>Complétez le formulaire ci-dessous et notre équipe vous contactera dans les 24 heures ouvrées.</p>
+
+            <form id="contactForm" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="prenom">Prénom *</label>
+                  <input type="text" id="prenom" name="prenom" placeholder="Votre prénom" required>
+                </div>
+                <div class="form-group">
+                  <label for="nom">Nom *</label>
+                  <input type="text" id="nom" name="nom" placeholder="Votre nom" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="email">Email professionnel *</label>
+                  <input type="email" id="email" name="email" placeholder="votre@entreprise.com" required>
+                </div>
+                <div class="form-group">
+                  <label for="tel">Téléphone *</label>
+                  <input type="tel" id="tel" name="tel" placeholder="+235 62 68 68 12" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="societe">Entreprise *</label>
+                  <input type="text" id="societe" name="societe" placeholder="Nom de votre entreprise" required>
+                </div>
+                <div class="form-group">
+                  <label for="pays">Pays</label>
+                  <input type="text" id="pays" name="pays" placeholder="Tchad, Cameroun…" value="Tchad">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="service">Service concerné *</label>
+                <select id="service" name="service" required>
+                  <option value="" disabled selected>Sélectionnez le service qui vous intéresse</option>
+                  <option value="logistique">Logistique & Transport</option>
+                  <option value="transit">Transit & Douane</option>
+                  <option value="import-export">Import / Export</option>
+                  <option value="telecom">Réseaux Télécom</option>
+                  <option value="genie-civil">Génie Civil</option>
+                  <option value="agrobusiness">Agrobusiness</option>
+                  <option value="multi">Plusieurs services</option>
+                  <option value="autre">Autre demande</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="budget">Budget estimé (optionnel)</label>
+                <select id="budget" name="budget">
+                  <option value="" disabled selected>Sélectionnez une fourchette (optionnel)</option>
+                  <option value="petit">Moins de 5 000 000 FCFA</option>
+                  <option value="moyen">5 000 000 – 20 000 000 FCFA</option>
+                  <option value="grand">20 000 000 – 100 000 000 FCFA</option>
+                  <option value="tres-grand">Plus de 100 000 000 FCFA</option>
+                  <option value="nsp">Je ne sais pas encore</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="message">Description de votre besoin *</label>
+                <textarea id="message" name="message" placeholder="Décrivez votre projet en détail : type de marchandises, volumes, origines et destinations, délais souhaités, contraintes particulières…" required style="min-height: 160px;"></textarea>
+              </div>
+
+              <div class="form-group" style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <input type="checkbox" id="rgpd" name="rgpd" required style="width: auto; margin-top: 0.2rem; flex-shrink: 0;">
+                <label for="rgpd" style="font-weight: 400; font-family: inherit; font-size: 0.85rem; color: var(--texte-clair); cursor: pointer;">
+                  J'accepte que Mosaïc International utilise mes données pour traiter ma demande et me recontacter. Ces données ne seront jamais transmises à des tiers.
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-violet" style="width: 100%; justify-content: center; font-size: 1rem; padding: 1rem;">
+                <i class="fas fa-paper-plane"></i> Envoyer ma demande
+              </button>
+
+              <p style="font-size: 0.78rem; text-align: center; margin-top: 1rem; margin-bottom: 0;">
+                <i class="fas fa-lock" style="color: var(--violet);"></i> Vos données sont sécurisées et ne seront jamais partagées
+              </p>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Section canaux de contact alternatifs -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header" data-animate>
+        <span class="badge badge-or">Contact direct</span>
+        <h2>Autres façons de nous joindre</h2>
+        <div class="section-divider"></div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;" data-animate>
+        <div style="background: var(--blanc); border-radius: 12px; padding: 2rem; text-align: center; border: 1px solid var(--gris); transition: all var(--transition);" onmouseover="this.style.boxShadow='0 8px 40px rgba(91,45,142,0.22)';this.style.borderColor='var(--violet)'" onmouseout="this.style.boxShadow='';this.style.borderColor='var(--gris)'">
+          <div style="width: 60px; height: 60px; background: rgba(37,211,102,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: #25D366; font-size: 1.5rem;">
+            <i class="fab fa-whatsapp"></i>
+          </div>
+          <h3>WhatsApp</h3>
+          <p>Messagerie instantanée pour les demandes rapides</p>
+          <a href="https://wa.me/23562686812" class="btn" style="background: #25D366; color: white; border-color: #25D366; margin-top: 0.5rem;" target="_blank" rel="noopener">
+            <i class="fab fa-whatsapp"></i> Ouvrir WhatsApp
+          </a>
+        </div>
+
+        <div style="background: var(--blanc); border-radius: 12px; padding: 2rem; text-align: center; border: 1px solid var(--gris); transition: all var(--transition);">
+          <div style="width: 60px; height: 60px; background: rgba(91,45,142,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--violet); font-size: 1.5rem;">
+            <i class="fas fa-phone-alt"></i>
+          </div>
+          <h3>Téléphone</h3>
+          <p>Pour une réponse immédiate de notre équipe</p>
+          <a href="tel:+23562686812" class="btn btn-violet" style="margin-top: 0.5rem;">
+            <i class="fas fa-phone"></i> Appeler maintenant
+          </a>
+        </div>
+
+        <div style="background: var(--blanc); border-radius: 12px; padding: 2rem; text-align: center; border: 1px solid var(--gris); transition: all var(--transition);">
+          <div style="width: 60px; height: 60px; background: rgba(240,165,0,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--or-dark); font-size: 1.5rem;">
+            <i class="fas fa-envelope-open-text"></i>
+          </div>
+          <h3>Email</h3>
+          <p>Pour les demandes détaillées avec documents</p>
+          <a href="mailto:contact@mozaikinternational.com" class="btn btn-primary" style="margin-top: 0.5rem;">
+            <i class="fas fa-envelope"></i> Envoyer un email
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-main">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <img src="images/cropped-LOGO-moaic.png" alt="Mosaïc International" class="footer-logo" style="height:50px; margin-bottom:1rem;">
+            <p>Votre partenaire logistique de référence en Afrique Centrale.</p>
+            <div class="footer-social">
+              <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+              <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h4>Nos Services</h4>
+            <ul>
+              <li><a href="services.html#logistique">Logistique & Transport</a></li>
+              <li><a href="services.html#transit">Transit & Douane</a></li>
+              <li><a href="services.html#import-export">Import / Export</a></li>
+              <li><a href="services.html#telecom">Réseaux Télécom</a></li>
+              <li><a href="services.html#genie-civil">Génie Civil</a></li>
+              <li><a href="services.html#agrobusiness">Agrobusiness</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Navigation</h4>
+            <ul>
+              <li><a href="index.html">Accueil</a></li>
+              <li><a href="a-propos.html">À Propos</a></li>
+              <li><a href="portfolio.html">Portfolio</a></li>
+              <li><a href="actualites.html">Actualités</a></li>
+              <li><a href="faq.html">FAQ</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Contact</h4>
+            <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>425W+W78, N'Djaména, Tchad</span></div>
+            <div class="footer-contact-item"><i class="fas fa-phone"></i><a href="tel:+23562686812">+235 62 68 68 12</a></div>
+            <div class="footer-contact-item"><i class="fas fa-envelope"></i><a href="mailto:contact@mozaikinternational.com">contact@mozaikinternational.com</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2026 Mosaïc International. Tous droits réservés.</p>
+        <p><a href="#">Mentions légales</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="whatsapp-float">
+    <div class="whatsapp-tooltip">Discuter sur WhatsApp</div>
+    <a href="https://wa.me/23562686812" class="whatsapp-btn" aria-label="WhatsApp" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+  </div>
+  <button class="back-top" aria-label="Retour en haut"><i class="fas fa-chevron-up"></i></button>
+  <script src="js/main.js"></script>
+</body>
+</html>

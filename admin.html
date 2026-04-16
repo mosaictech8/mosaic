@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administration — Mosaïc International</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --violet: #5B2D8E;
+      --violet-dark: #3d1e62;
+      --marine: #1A1A2E;
+      --or: #F0A500;
+      --blanc: #ffffff;
+      --gris: #e0e0e8;
+      --gris-clair: #f5f5f8;
+      --texte: #2c2c3e;
+      --texte-clair: #6b6b80;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --radius: 10px;
+      --sidebar-w: 260px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--gris-clair); color: var(--texte); }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; font-family: inherit; }
+    input, textarea, select { font-family: inherit; }
+
+    /* ── Login ── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--marine) 0%, var(--violet-dark) 100%);
+    }
+    .login-card {
+      background: var(--blanc);
+      border-radius: 20px;
+      padding: 3rem;
+      width: 380px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    }
+    .login-logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .login-logo img { height: 52px; margin: 0 auto 1rem; display: block; }
+    .login-logo h1 { font-family: 'Montserrat', sans-serif; font-size: 1.2rem; color: var(--marine); }
+    .login-logo p { font-size: 0.82rem; color: var(--texte-clair); margin-top: 0.25rem; }
+    .login-form label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      font-family: 'Montserrat', sans-serif;
+      color: var(--marine);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .login-form input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 2px solid var(--gris);
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      margin-bottom: 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .login-form input:focus { outline: none; border-color: var(--violet); }
+    .login-btn {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--violet);
+      color: var(--blanc);
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 700;
+      font-size: 1rem;
+      font-family: 'Montserrat', sans-serif;
+      transition: background 0.2s;
+    }
+    .login-btn:hover { background: var(--violet-dark); }
+    .login-error {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--danger);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .login-error.show { display: block; }
+    .login-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.82rem;
+      color: var(--texte-clair);
+    }
+    .login-link a { color: var(--violet); font-weight: 600; }
+
+    /* ── Dashboard ── */
+    #dashboard { display: none; min-height: 100vh; }
+    #dashboard.visible { display: flex; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--marine);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      z-index: 100;
+      overflow-y: auto;
+    }
+    .sidebar-brand {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-brand img { height: 40px; filter: brightness(0) invert(1); }
+    .sidebar-brand p {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      margin-top: 0.4rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .sidebar-nav { padding: 1rem 0; flex: 1; }
+    .nav-group-label {
+      padding: 0.5rem 1.25rem;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.35);
+      font-weight: 700;
+      font-family: 'Montserrat', sans-serif;
+      margin-top: 0.75rem;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      color: rgba(255,255,255,0.65);
+      font-size: 0.88rem;
+      font-weight: 500;
+      border-radius: 0;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item i { width: 18px; font-size: 0.9rem; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: var(--blanc); }
+    .nav-item.active { background: var(--violet); color: var(--blanc); }
+    .nav-item .badge-count {
+      margin-left: auto;
+      background: var(--or);
+      color: var(--marine);
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.68rem;
+      font-weight: 800;
+    }
+    .sidebar-user {
+      padding: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .user-avatar {
+      width: 38px; height: 38px;
+      background: var(--or);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--marine);
+      font-weight: 800;
+      font-size: 0.9rem;
+      font-family: 'Montserrat', sans-serif;
+      flex-shrink: 0;
+    }
+    .user-info { flex: 1; min-width: 0; }
+    .user-info .name { color: var(--blanc); font-size: 0.85rem; font-weight: 600; }
+    .user-info .role { color: rgba(255,255,255,0.4); font-size: 0.72rem; }
+    .logout-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .logout-btn:hover { color: var(--danger); }
+
+    /* Main content */
+    .main-content {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      min-height: 100vh;
+    }
+    .topbar-admin {
+      background: var(--blanc);
+      border-bottom: 1px solid var(--gris);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-admin h2 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; color: var(--marine); }
+    .topbar-right-admin { display: flex; align-items: center; gap: 1rem; }
+    .topbar-date { font-size: 0.8rem; color: var(--texte-clair); }
+
+    /* Panels */
+    .panel { display: none; padding: 2rem; }
+    .panel.active { display: block; }
+
+    /* Stats grid */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .stat-box {
+      background: var(--blanc);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--gris);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .stat-box-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .sbi-violet { background: rgba(91,45,142,0.1); color: var(--violet); }
+    .sbi-or { background: rgba(240,165,0,0.1); color: var(--or); }
+    .sbi-green { background: rgba(22,163,74,0.1); color: var(--success); }
+    .sbi-danger { background: rgba(220,38,38,0.1); color: var(--danger); }
+    .stat-box-data .num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--marine);
+      line-height: 1;
+    }
+    .stat-box-data .lbl { font-size: 0.8rem; color: var(--texte-clair); margin-top: 0.25rem; }
+
+    /* Cards */
+    .card {
+      background: var(--blanc);
+      border-radius: 12px;
+      border: 1px solid var(--gris);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--gris);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-header h3 { font-family: 'Montserrat', sans-serif; font-size: 1rem; color: var(--marine); }
+    .card-body { padding: 1.5rem; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; font-family: 'Montserrat', sans-serif; border: none; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: var(--violet); color: var(--blanc); }
+    .btn-primary:hover { background: var(--violet-dark); }
+    .btn-success { background: var(--success); color: var(--blanc); }
+    .btn-danger { background: var(--danger); color: var(--blanc); }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-secondary { background: var(--gris-clair); color: var(--texte); border: 1px solid var(--gris); }
+    .btn-secondary:hover { background: var(--gris); }
+    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
+    .btn-or { background: var(--or); color: var(--marine); }
+    .btn-or:hover { background: #c98a00; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      background: var(--gris-clair);
+      padding: 0.75rem 1rem;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--texte-clair);
+      font-weight: 700;
+      font-family: 'Montserrat', sans-serif;
+      text-align: left;
+      border-bottom: 2px solid var(--gris);
+    }
+    td {
+      padding: 0.9rem 1rem;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--gris);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--gris-clair); }
+    .td-actions { display: flex; gap: 0.4rem; }
+
+    /* Status badge */
+    .status { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.65rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700; }
+    .status-new { background: rgba(240,165,0,0.12); color: #92610a; }
+    .status-read { background: rgba(91,45,142,0.08); color: var(--violet); }
+    .status-published { background: rgba(22,163,74,0.1); color: var(--success); }
+    .status-draft { background: rgba(156,163,175,0.2); color: #6b7280; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    /* Form */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--marine); margin-bottom: 0.35rem; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.04em; }
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--gris);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus { outline: none; border-color: var(--violet); }
+    textarea.form-control { resize: vertical; min-height: 120px; }
+    .form-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+
+    /* Request detail modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--blanc);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--gris);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-header h3 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; }
+    .modal-close { background: none; border: none; font-size: 1.2rem; color: var(--texte-clair); cursor: pointer; }
+    .modal-body { padding: 1.5rem; }
+    .detail-row { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
+    .detail-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--texte-clair); font-weight: 700; width: 120px; flex-shrink: 0; margin-top: 0.15rem; }
+    .detail-value { font-size: 0.92rem; flex: 1; }
+    .detail-message { background: var(--gris-clair); border-radius: 8px; padding: 1rem; font-size: 0.88rem; color: var(--texte); line-height: 1.6; margin-top: 0.5rem; }
+    .modal-footer { padding: 1.25rem 1.5rem; border-top: 1px solid var(--gris); display: flex; gap: 0.75rem; }
+
+    /* Alert */
+    .alert { padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.88rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--success); }
+    .alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: var(--danger); }
+    .alert { display: none; }
+    .alert.show { display: flex; }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--texte-clair); }
+    .empty-state i { font-size: 3rem; opacity: 0.25; display: block; margin-bottom: 1rem; }
+    .empty-state p { font-size: 0.92rem; }
+
+    /* Rich text area */
+    .editor-toolbar {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      padding: 0.5rem;
+      background: var(--gris-clair);
+      border: 2px solid var(--gris);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+    }
+    .editor-toolbar button {
+      width: 30px; height: 30px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      font-size: 0.82rem;
+      color: var(--texte);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .editor-toolbar button:hover { background: var(--gris); }
+    .editor-content {
+      width: 100%;
+      min-height: 200px;
+      border: 2px solid var(--gris);
+      border-radius: 0 0 8px 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      outline: none;
+      font-family: inherit;
+      line-height: 1.7;
+    }
+    .editor-content:focus { border-color: var(--violet); }
+
+    /* Image preview */
+    .img-preview {
+      width: 100%;
+      height: 180px;
+      border: 2px dashed var(--gris);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .img-preview:hover { border-color: var(--violet); background: rgba(91,45,142,0.02); }
+    .img-preview i { font-size: 2rem; color: var(--texte-clair); margin-bottom: 0.5rem; }
+    .img-preview span { font-size: 0.82rem; color: var(--texte-clair); }
+    .img-preview input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .img-preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .img-preview .img-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; pointer-events: none; }
+    .img-preview:hover .img-overlay { opacity: 1; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--gris); border-radius: 3px; }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════ LOGIN SCREEN ═══════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="images/cropped-LOGO-moaic.png" alt="Mosaïc International">
+      <h1>Espace Administration</h1>
+      <p>Connectez-vous pour gérer le site</p>
+    </div>
+    <div class="login-error" id="loginError">
+      <i class="fas fa-exclamation-circle"></i> Identifiants incorrects. Réessayez.
+    </div>
+    <form class="login-form" id="loginForm" onsubmit="doLogin(event)">
+      <label for="username">Identifiant</label>
+      <input type="text" id="username" placeholder="admin" autocomplete="username" required>
+      <label for="password">Mot de passe</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+      <button type="submit" class="login-btn">
+        <i class="fas fa-sign-in-alt" style="margin-right:0.5rem;"></i> Se connecter
+      </button>
+    </form>
+    <a href="index.html" class="login-link">← Retour au site</a>
+  </div>
+</div>
+
+<!-- ═══════ DASHBOARD ═══════ -->
+<div id="dashboard">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="images/cropped-LOGO-moaic.png" alt="Mosaïc International">
+      <p>Administration</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Vue d'ensemble</div>
+      <button class="nav-item active" onclick="showPanel('dashboard-home')">
+        <i class="fas fa-tachometer-alt"></i> Tableau de bord
+      </button>
+      <div class="nav-group-label">Contenu</div>
+      <button class="nav-item" onclick="showPanel('panel-news')" id="nav-news">
+        <i class="fas fa-newspaper"></i> Actualités
+      </button>
+      <button class="nav-item" onclick="showPanel('panel-portfolio')" id="nav-portfolio">
+        <i class="fas fa-briefcase"></i> Portfolio
+      </button>
+      <div class="nav-group-label">Demandes</div>
+      <button class="nav-item" onclick="showPanel('panel-contacts')" id="nav-contacts">
+        <i class="fas fa-envelope"></i> Demandes reçues
+        <span class="badge-count" id="unread-badge" style="display:none;">0</span>
+      </button>
+      <div class="nav-group-label">Paramètres</div>
+      <button class="nav-item" onclick="showPanel('panel-settings')">
+        <i class="fas fa-cog"></i> Paramètres
+      </button>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar">BY</div>
+      <div class="user-info">
+        <div class="name">Bechir Youssouf</div>
+        <div class="role">Administrateur</div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()" title="Se déconnecter">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-content">
+    <div class="topbar-admin">
+      <h2 id="panel-title">Tableau de bord</h2>
+      <div class="topbar-right-admin">
+        <span class="topbar-date" id="today-date"></span>
+        <a href="index.html" target="_blank" class="btn btn-secondary btn-sm">
+          <i class="fas fa-external-link-alt"></i> Voir le site
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Panel : Tableau de bord ── -->
+    <div class="panel active" id="dashboard-home">
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-box-icon sbi-violet"><i class="fas fa-newspaper"></i></div>
+          <div class="stat-box-data">
+            <div class="num" id="stat-news">0</div>
+            <div class="lbl">Articles publiés</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-icon sbi-or"><i class="fas fa-envelope"></i></div>
+          <div class="stat-box-data">
+            <div class="num" id="stat-total-contacts">0</div>
+            <div class="lbl">Demandes reçues</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-icon sbi-danger"><i class="fas fa-bell"></i></div>
+          <div class="stat-box-data">
+            <div class="num" id="stat-unread">0</div>
+            <div class="lbl">Non lues</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-icon sbi-green"><i class="fas fa-briefcase"></i></div>
+          <div class="stat-box-data">
+            <div class="num" id="stat-portfolio">0</div>
+            <div class="lbl">Projets portfolio</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:1.5rem;">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-envelope" style="color:var(--violet);margin-right:0.5rem;"></i>Dernières demandes</h3>
+            <button class="btn btn-secondary btn-sm" onclick="showPanel('panel-contacts')">Voir tout</button>
+          </div>
+          <div class="card-body" id="recent-contacts-list">
+            <div class="empty-state"><i class="fas fa-inbox"></i><p>Aucune demande pour l'instant.</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-bolt" style="color:var(--or);margin-right:0.5rem;"></i>Actions rapides</h3>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:0.75rem;">
+            <button class="btn btn-primary" style="justify-content:center;" onclick="showPanel('panel-news'); openNewsForm()">
+              <i class="fas fa-plus"></i> Nouvel article
+            </button>
+            <button class="btn btn-or" style="justify-content:center;" onclick="showPanel('panel-contacts')">
+              <i class="fas fa-envelope"></i> Voir les demandes
+            </button>
+            <a href="contact.html" target="_blank" class="btn btn-secondary" style="justify-content:center;">
+              <i class="fas fa-external-link-alt"></i> Formulaire de contact
+            </a>
+            <a href="actualites.html" target="_blank" class="btn btn-secondary" style="justify-content:center;">
+              <i class="fas fa-newspaper"></i> Page actualités
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Panel : Actualités ── -->
+    <div class="panel" id="panel-news">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <div>
+          <h3 style="font-family:'Montserrat',sans-serif; font-size:1.1rem; color:var(--marine);">Gestion des actualités</h3>
+          <p style="font-size:0.82rem;color:var(--texte-clair);margin-top:0.2rem;">Les articles publiés apparaissent sur la page Actualités du site.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openNewsForm()">
+          <i class="fas fa-plus"></i> Nouvel article
+        </button>
+      </div>
+
+      <!-- Formulaire article (caché par défaut) -->
+      <div class="card" id="news-form-card" style="display:none; margin-bottom:1.5rem; border-color:var(--violet);">
+        <div class="card-header" style="background:rgba(91,45,142,0.04);">
+          <h3 id="news-form-title">Nouvel article</h3>
+          <button class="btn btn-secondary btn-sm" onclick="closeNewsForm()"><i class="fas fa-times"></i> Annuler</button>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-success" id="news-alert"><i class="fas fa-check-circle"></i> <span id="news-alert-msg"></span></div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Titre de l'article *</label>
+              <input type="text" class="form-control" id="news-title" placeholder="Ex : Nouvelles procédures douanières 2026">
+            </div>
+            <div class="form-group">
+              <label>Catégorie *</label>
+              <select class="form-control" id="news-cat">
+                <option value="">Sélectionner…</option>
+                <option value="Logistique">Logistique</option>
+                <option value="Transit & Douane">Transit & Douane</option>
+                <option value="Télécom">Télécom</option>
+                <option value="Génie Civil">Génie Civil</option>
+                <option value="Agrobusiness">Agrobusiness</option>
+                <option value="Entreprise">Actualité entreprise</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Statut</label>
+              <select class="form-control" id="news-status">
+                <option value="published">Publié</option>
+                <option value="draft">Brouillon</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label>Résumé (affiché dans la liste)</label>
+              <textarea class="form-control" id="news-excerpt" rows="2" placeholder="Courte description de l'article…"></textarea>
+            </div>
+            <div class="form-group full">
+              <label>Contenu complet</label>
+              <div class="editor-toolbar">
+                <button onclick="fmt('bold')" title="Gras"><i class="fas fa-bold"></i></button>
+                <button onclick="fmt('italic')" title="Italique"><i class="fas fa-italic"></i></button>
+                <button onclick="fmt('underline')" title="Souligné"><i class="fas fa-underline"></i></button>
+                <button onclick="fmt('insertUnorderedList')" title="Liste"><i class="fas fa-list-ul"></i></button>
+                <button onclick="fmt('formatBlock','h3')" title="Titre">H3</button>
+                <button onclick="fmt('formatBlock','p')" title="Paragraphe">¶</button>
+              </div>
+              <div class="editor-content" id="news-content" contenteditable="true"></div>
+            </div>
+            <div class="form-group">
+              <label>Image de couverture</label>
+              <div class="img-preview" id="img-preview-wrap">
+                <i class="fas fa-image"></i>
+                <span>Cliquer pour choisir une image</span>
+                <input type="file" accept="image/*" id="news-image" onchange="previewImg(this)">
+                <div class="img-overlay"><i class="fas fa-camera" style="color:white;font-size:1.5rem;"></i></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Auteur</label>
+              <input type="text" class="form-control" id="news-author" value="Équipe Mosaïc International">
+              <label style="margin-top:1rem;">Date de publication</label>
+              <input type="date" class="form-control" id="news-date">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="saveArticle()"><i class="fas fa-save"></i> Enregistrer</button>
+            <button class="btn btn-secondary" onclick="closeNewsForm()">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Liste articles -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Articles <span id="news-count" style="color:var(--texte-clair);font-weight:400;font-size:0.85rem;">(0)</span></h3>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Titre</th>
+                <th>Catégorie</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="news-table-body">
+              <tr><td colspan="5"><div class="empty-state"><i class="fas fa-newspaper"></i><p>Aucun article créé.</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Panel : Demandes ── -->
+    <div class="panel" id="panel-contacts">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <div>
+          <h3 style="font-family:'Montserrat',sans-serif;font-size:1.1rem;color:var(--marine);">Demandes de contact</h3>
+          <p style="font-size:0.82rem;color:var(--texte-clair);margin-top:0.2rem;">Messages reçus depuis le formulaire de contact du site.</p>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="clearAllContacts()"><i class="fas fa-trash"></i> Tout supprimer</button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Statut</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Téléphone</th>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="contacts-table-body">
+              <tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i><p>Aucune demande reçue pour l'instant.</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Panel : Portfolio ── -->
+    <div class="panel" id="panel-portfolio">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h3 style="font-family:'Montserrat',sans-serif;font-size:1.1rem;color:var(--marine);">Portfolio — Projets</h3>
+        <p style="font-size:0.88rem;color:var(--texte-clair);">Gérez les projets affichés dans le portfolio (fonctionnalité à venir).</p>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="empty-state">
+            <i class="fas fa-tools"></i>
+            <p>La gestion du portfolio sera disponible dans la prochaine version.<br>Contactez votre développeur pour ajouter des projets.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Panel : Paramètres ── -->
+    <div class="panel" id="panel-settings">
+      <div style="margin-bottom:1.5rem;">
+        <h3 style="font-family:'Montserrat',sans-serif;font-size:1.1rem;color:var(--marine);">Paramètres du site</h3>
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header"><h3>Informations de contact</h3></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Téléphone principal</label>
+              <input type="text" class="form-control" id="set-phone" value="+235 62 68 68 12">
+            </div>
+            <div class="form-group">
+              <label>Email de contact</label>
+              <input type="email" class="form-control" id="set-email" value="contact@mozaikinternational.com">
+            </div>
+            <div class="form-group full">
+              <label>Adresse</label>
+              <input type="text" class="form-control" id="set-address" value="425W+W78, N'Djaména, Tchad">
+            </div>
+            <div class="form-group">
+              <label>Horaires</label>
+              <input type="text" class="form-control" id="set-hours" value="Lun – Sam : 07h00 – 18h00">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Enregistrer</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Changer le mot de passe admin</h3></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Ancien mot de passe</label>
+              <input type="password" class="form-control" id="pwd-old" placeholder="••••••••">
+            </div>
+            <div class="form-group">
+              <label>Nouveau mot de passe</label>
+              <input type="password" class="form-control" id="pwd-new" placeholder="••••••••">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="changePassword()"><i class="fas fa-lock"></i> Changer le mot de passe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /dashboard -->
+
+<!-- Modal détail contact -->
+<div class="modal-backdrop" id="contact-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Détail de la demande</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="modal-body-content"></div>
+    <div class="modal-footer" id="modal-footer-content"></div>
+  </div>
+</div>
+
+<script type="text/plain" id="legacy-disabled">
+/* Code désactivé — remplacé par js/admin.js */
+
+// ── Constantes ──────────────────────────────────────────────
+const STORAGE_KEYS = {
+  contacts: 'mosaic_contacts',
+  news: 'mosaic_news',
+  settings: 'mosaic_settings',
+  session: 'mosaic_admin_session',
+  password: 'mosaic_admin_pwd'
+};
+
+// Mot de passe par défaut hashé (simpliste pour site statique)
+const DEFAULT_USER = 'admin';
+const DEFAULT_PASS = 'Mosaic2026!';
+
+let editingNewsId = null;
+let currentContactId = null;
+
+// ── Utilitaires storage ─────────────────────────────────────
+const getData = k => JSON.parse(localStorage.getItem(k) || '[]');
+const setData = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const getObj = k => JSON.parse(localStorage.getItem(k) || '{}');
+
+// ── Init ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Date
+  const d = new Date();
+  document.getElementById('today-date').textContent =
+    d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  // Init password if not set
+  if (!localStorage.getItem(STORAGE_KEYS.password)) {
+    localStorage.setItem(STORAGE_KEYS.password, DEFAULT_PASS);
+  }
+
+  // Init news date
+  document.getElementById('news-date').value = new Date().toISOString().split('T')[0];
+
+  // Check session
+  if (sessionStorage.getItem(STORAGE_KEYS.session) === 'ok') {
+    showDashboard();
+  }
+
+  // Load settings
+  const settings = getObj(STORAGE_KEYS.settings);
+  if (settings.phone) document.getElementById('set-phone').value = settings.phone;
+  if (settings.email) document.getElementById('set-email').value = settings.email;
+  if (settings.address) document.getElementById('set-address').value = settings.address;
+  if (settings.hours) document.getElementById('set-hours').value = settings.hours;
+});
+
+// ── Auth ────────────────────────────────────────────────────
+function doLogin(e) {
+  e.preventDefault();
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  const storedPass = localStorage.getItem(STORAGE_KEYS.password) || DEFAULT_PASS;
+
+  if (u === DEFAULT_USER && p === storedPass) {
+    sessionStorage.setItem(STORAGE_KEYS.session, 'ok');
+    showDashboard();
+  } else {
+    document.getElementById('loginError').classList.add('show');
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem(STORAGE_KEYS.session);
+  location.reload();
+}
+
+function showDashboard() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').classList.add('visible');
+  refreshAll();
+}
+
+// ── Navigation ───────────────────────────────────────────────
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const titles = {
+    'dashboard-home': 'Tableau de bord',
+    'panel-news': 'Actualités',
+    'panel-contacts': 'Demandes reçues',
+    'panel-portfolio': 'Portfolio',
+    'panel-settings': 'Paramètres'
+  };
+  document.getElementById('panel-title').textContent = titles[id] || '';
+
+  if (id === 'panel-contacts') renderContacts();
+  if (id === 'panel-news') renderNews();
+  if (id === 'dashboard-home') refreshAll();
+}
+
+// ── Refresh all ──────────────────────────────────────────────
+function refreshAll() {
+  const news = getData(STORAGE_KEYS.news);
+  const contacts = getData(STORAGE_KEYS.contacts);
+  const unread = contacts.filter(c => c.status === 'new').length;
+
+  document.getElementById('stat-news').textContent = news.filter(n=>n.status==='published').length;
+  document.getElementById('stat-total-contacts').textContent = contacts.length;
+  document.getElementById('stat-unread').textContent = unread;
+  document.getElementById('stat-portfolio').textContent = 9; // hardcoded
+
+  // Unread badge
+  const badge = document.getElementById('unread-badge');
+  if (unread > 0) { badge.textContent = unread; badge.style.display = 'flex'; }
+  else badge.style.display = 'none';
+
+  renderRecentContacts();
+}
+
+// ── Recent contacts on dashboard ────────────────────────────
+function renderRecentContacts() {
+  const contacts = getData(STORAGE_KEYS.contacts).slice(-5).reverse();
+  const wrap = document.getElementById('recent-contacts-list');
+  if (!contacts.length) {
+    wrap.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>Aucune demande.</p></div>';
+    return;
+  }
+  wrap.innerHTML = contacts.map(c => `
+    <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid var(--gris);cursor:pointer;" onclick="openContact('${c.id}')">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--gris-clair);display:flex;align-items:center;justify-content:center;color:var(--violet);font-size:0.9rem;flex-shrink:0;">
+        <i class="fas fa-user"></i>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:600;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.prenom} ${c.nom}</div>
+        <div style="font-size:0.75rem;color:var(--texte-clair);">${c.service || 'Non précisé'} · ${formatDate(c.date)}</div>
+      </div>
+      ${c.status==='new' ? '<span class="status status-new"><span class="status-dot"></span>Nouveau</span>' : ''}
+    </div>
+  `).join('');
+}
+
+// ── Contacts ─────────────────────────────────────────────────
+function renderContacts() {
+  const contacts = getData(STORAGE_KEYS.contacts).reverse();
+  const tbody = document.getElementById('contacts-table-body');
+  if (!contacts.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i><p>Aucune demande reçue.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = contacts.map(c => `
+    <tr style="${c.status==='new' ? 'font-weight:600;' : ''}">
+      <td>
+        ${c.status==='new'
+          ? '<span class="status status-new"><span class="status-dot"></span>Nouveau</span>'
+          : '<span class="status status-read"><span class="status-dot"></span>Lu</span>'}
+      </td>
+      <td>${escHtml(c.prenom + ' ' + c.nom)}</td>
+      <td><a href="mailto:${escHtml(c.email)}" style="color:var(--violet);">${escHtml(c.email)}</a></td>
+      <td>${escHtml(c.tel || '—')}</td>
+      <td>${escHtml(c.service || '—')}</td>
+      <td style="font-size:0.8rem;color:var(--texte-clair);">${formatDate(c.date)}</td>
+      <td>
+        <div class="td-actions">
+          <button class="btn btn-secondary btn-sm" onclick="openContact('${c.id}')"><i class="fas fa-eye"></i></button>
+          <button class="btn btn-danger btn-sm" onclick="deleteContact('${c.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openContact(id) {
+  const contacts = getData(STORAGE_KEYS.contacts);
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  currentContactId = id;
+
+  // Mark as read
+  const idx = contacts.findIndex(x => x.id === id);
+  contacts[idx].status = 'read';
+  setData(STORAGE_KEYS.contacts, contacts);
+  refreshAll();
+  renderContacts();
+
+  document.getElementById('modal-body-content').innerHTML = `
+    <div class="detail-row"><div class="detail-label">Nom</div><div class="detail-value">${escHtml(c.prenom)} ${escHtml(c.nom)}</div></div>
+    <div class="detail-row"><div class="detail-label">Email</div><div class="detail-value"><a href="mailto:${escHtml(c.email)}" style="color:var(--violet);">${escHtml(c.email)}</a></div></div>
+    <div class="detail-row"><div class="detail-label">Téléphone</div><div class="detail-value">${escHtml(c.tel || '—')}</div></div>
+    <div class="detail-row"><div class="detail-label">Entreprise</div><div class="detail-value">${escHtml(c.societe || '—')}</div></div>
+    <div class="detail-row"><div class="detail-label">Pays</div><div class="detail-value">${escHtml(c.pays || '—')}</div></div>
+    <div class="detail-row"><div class="detail-label">Service</div><div class="detail-value">${escHtml(c.service || '—')}</div></div>
+    <div class="detail-row"><div class="detail-label">Date</div><div class="detail-value">${formatDate(c.date, true)}</div></div>
+    <div class="detail-row" style="flex-direction:column;">
+      <div class="detail-label" style="margin-bottom:0.5rem;">Message</div>
+      <div class="detail-message">${escHtml(c.message || 'Aucun message.')}</div>
+    </div>
+  `;
+  document.getElementById('modal-footer-content').innerHTML = `
+    <a href="mailto:${escHtml(c.email)}?subject=Re: Votre demande — Mosaïc International" class="btn btn-primary"><i class="fas fa-reply"></i> Répondre par email</a>
+    ${c.tel ? `<a href="tel:${escHtml(c.tel)}" class="btn btn-secondary"><i class="fas fa-phone"></i> Appeler</a>` : ''}
+    <button class="btn btn-danger" style="margin-left:auto;" onclick="deleteContact('${c.id}');closeModal();"><i class="fas fa-trash"></i></button>
+  `;
+  document.getElementById('contact-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('contact-modal').classList.remove('open');
+}
+
+function deleteContact(id) {
+  if (!confirm('Supprimer cette demande ?')) return;
+  const contacts = getData(STORAGE_KEYS.contacts).filter(c => c.id !== id);
+  setData(STORAGE_KEYS.contacts, contacts);
+  renderContacts();
+  refreshAll();
+}
+
+function clearAllContacts() {
+  if (!confirm('Supprimer TOUTES les demandes ? Cette action est irréversible.')) return;
+  setData(STORAGE_KEYS.contacts, []);
+  renderContacts();
+  refreshAll();
+}
+
+// ── News ─────────────────────────────────────────────────────
+function openNewsForm(id = null) {
+  editingNewsId = id;
+  document.getElementById('news-form-card').style.display = 'block';
+  document.getElementById('news-form-card').scrollIntoView({ behavior: 'smooth' });
+
+  if (id) {
+    const article = getData(STORAGE_KEYS.news).find(n => n.id === id);
+    if (article) {
+      document.getElementById('news-form-title').textContent = 'Modifier l\'article';
+      document.getElementById('news-title').value = article.title;
+      document.getElementById('news-cat').value = article.category;
+      document.getElementById('news-status').value = article.status;
+      document.getElementById('news-excerpt').value = article.excerpt;
+      document.getElementById('news-content').innerHTML = article.content;
+      document.getElementById('news-author').value = article.author;
+      document.getElementById('news-date').value = article.date;
+      setNewsImagePreview(article.imageData || '');
+    }
+  } else {
+    document.getElementById('news-form-title').textContent = 'Nouvel article';
+    document.getElementById('news-title').value = '';
+    document.getElementById('news-cat').value = '';
+    document.getElementById('news-status').value = 'published';
+    document.getElementById('news-excerpt').value = '';
+    document.getElementById('news-content').innerHTML = '';
+    document.getElementById('news-author').value = 'Équipe Mosaïc International';
+    document.getElementById('news-date').value = new Date().toISOString().split('T')[0];
+    setNewsImagePreview('');
+  }
+}
+
+function closeNewsForm() {
+  document.getElementById('news-form-card').style.display = 'none';
+  editingNewsId = null;
+  setNewsImagePreview('');
+}
+
+function saveArticle() {
+  const title = document.getElementById('news-title').value.trim();
+  const cat = document.getElementById('news-cat').value;
+  if (!title) { alert('Le titre est obligatoire.'); return; }
+  if (!cat) { alert('La catégorie est obligatoire.'); return; }
+
+  const articles = getData(STORAGE_KEYS.news);
+  const existingArticle = editingNewsId ? articles.find(n => n.id === editingNewsId) : null;
+  const article = {
+    id: editingNewsId || 'art_' + Date.now(),
+    title,
+    category: cat,
+    status: document.getElementById('news-status').value,
+    excerpt: document.getElementById('news-excerpt').value,
+    content: document.getElementById('news-content').innerHTML,
+    author: document.getElementById('news-author').value || 'Équipe Mosaïc',
+    date: document.getElementById('news-date').value,
+    imageData: getNewsImageData() || existingArticle?.imageData || '',
+    createdAt: editingNewsId ? undefined : new Date().toISOString()
+  };
+
+  if (editingNewsId) {
+    const idx = articles.findIndex(n => n.id === editingNewsId);
+    articles[idx] = { ...articles[idx], ...article };
+  } else {
+    articles.push(article);
+  }
+
+  setData(STORAGE_KEYS.news, articles);
+  renderNews();
+  refreshAll();
+  closeNewsForm();
+
+  // Show success alert
+  const alertEl = document.getElementById('news-alert');
+  document.getElementById('news-alert-msg').textContent =
+    editingNewsId ? 'Article modifié avec succès !' : 'Article publié avec succès !';
+  alertEl.classList.add('show');
+  setTimeout(() => alertEl.classList.remove('show'), 3000);
+}
+
+function renderNews() {
+  const articles = getData(STORAGE_KEYS.news).reverse();
+  const tbody = document.getElementById('news-table-body');
+  const count = document.getElementById('news-count');
+  count.textContent = `(${articles.length})`;
+
+  if (!articles.length) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-newspaper"></i><p>Aucun article. Créez votre premier article !</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = articles.map(a => `
+    <tr>
+      <td style="max-width:280px;font-weight:600;">${escHtml(a.title)}</td>
+      <td><span style="background:rgba(91,45,142,0.08);color:var(--violet);padding:0.2rem 0.6rem;border-radius:50px;font-size:0.78rem;font-weight:700;">${escHtml(a.category)}</span></td>
+      <td style="font-size:0.82rem;color:var(--texte-clair);">${formatDate(a.date)}</td>
+      <td>
+        ${a.status === 'published'
+          ? '<span class="status status-published"><span class="status-dot"></span>Publié</span>'
+          : '<span class="status status-draft"><span class="status-dot"></span>Brouillon</span>'}
+      </td>
+      <td>
+        <div class="td-actions">
+          <button class="btn btn-secondary btn-sm" onclick="openNewsForm('${a.id}')"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-danger btn-sm" onclick="deleteArticle('${a.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function deleteArticle(id) {
+  if (!confirm('Supprimer cet article ?')) return;
+  const articles = getData(STORAGE_KEYS.news).filter(n => n.id !== id);
+  setData(STORAGE_KEYS.news, articles);
+  renderNews();
+  refreshAll();
+}
+
+// ── Settings ─────────────────────────────────────────────────
+function saveSettings() {
+  const settings = {
+    phone: document.getElementById('set-phone').value,
+    email: document.getElementById('set-email').value,
+    address: document.getElementById('set-address').value,
+    hours: document.getElementById('set-hours').value
+  };
+  setData(STORAGE_KEYS.settings, settings);
+  alert('Paramètres enregistrés !');
+}
+
+function changePassword() {
+  const oldPwd = document.getElementById('pwd-old').value;
+  const newPwd = document.getElementById('pwd-new').value;
+  const stored = localStorage.getItem(STORAGE_KEYS.password) || DEFAULT_PASS;
+
+  if (oldPwd !== stored) { alert('Ancien mot de passe incorrect.'); return; }
+  if (newPwd.length < 6) { alert('Le nouveau mot de passe doit contenir au moins 6 caractères.'); return; }
+
+  localStorage.setItem(STORAGE_KEYS.password, newPwd);
+  document.getElementById('pwd-old').value = '';
+  document.getElementById('pwd-new').value = '';
+  alert('Mot de passe modifié avec succès !');
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(d, full = false) {
+  if (!d) return '—';
+  const date = new Date(d);
+  if (isNaN(date)) return d;
+  if (full) return date.toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  return date.toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' });
+}
+
+function fmt(cmd, val = null) {
+  document.execCommand(cmd, false, val);
+  document.getElementById('news-content').focus();
+}
+
+function previewImg(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    setNewsImagePreview(e.target.result);
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function setNewsImagePreview(src) {
+  const wrap = document.getElementById('img-preview-wrap');
+  let img = wrap.querySelector('img');
+
+  if (src) {
+    if (!img) {
+      img = document.createElement('img');
+      wrap.appendChild(img);
+    }
+    img.src = src;
+    wrap.querySelector('i').style.display = 'none';
+    wrap.querySelector('span').style.display = 'none';
+  } else {
+    if (img) img.remove();
+    wrap.querySelector('i').style.display = '';
+    wrap.querySelector('span').style.display = '';
+    document.getElementById('news-image').value = '';
+  }
+}
+
+function getNewsImageData() {
+  return document.querySelector('#img-preview-wrap img')?.src || '';
+}
+
+// Close modal on backdrop click
+document.getElementById('contact-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('contact-modal')) closeModal();
+});
+</script>
+<script src="js/admin.js"></script>
+</body>
+</html>

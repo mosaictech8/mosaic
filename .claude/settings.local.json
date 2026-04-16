@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"FIXME\\\\|TODO\\\\|BUG\\\\|XXX\" /c/Users/adamm/OneDrive/Documents/pro/mosaic/*.js /c/Users/adamm/OneDrive/Documents/pro/mosaic/*.html)",
+      "Bash(npm audit *)"
+    ]
+  }
+}
