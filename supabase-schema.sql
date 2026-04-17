@@ -83,6 +83,29 @@ create policy "public read images" on storage.objects
   for select to public
   using (bucket_id = 'article-images');
 
+-- ── Table devis (demandes de devis) ──────────────────────────
+create table if not exists devis (
+  id          text primary key,
+  prenom      text,
+  nom         text,
+  email       text,
+  tel         text,
+  societe     text,
+  pays        text,
+  service     text,
+  description text,
+  budget      text,
+  delai       text,
+  origine     text,
+  destination text,
+  volume      text,
+  status      text default 'nouveau',
+  date        text,
+  created_at  text
+);
+
+alter table devis disable row level security;
+
 -- ================================================================
 -- Fin du script. Après exécution, relancez : npm start
 -- ================================================================

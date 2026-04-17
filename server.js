@@ -441,6 +441,114 @@ app.post('/api/change-password', requireAuth, async (req, res) => {
   }
 });
 
+/* ══════════════════════════════════════════════════════════
+   DEVIS
+══════════════════════════════════════════════════════════ */
+const toDevis = (r) => !r ? null : {
+  id: r.id, prenom: r.prenom, nom: r.nom,
+  email: r.email, tel: r.tel, societe: r.societe,
+  pays: r.pays, service: r.service, description: r.description,
+  budget: r.budget, delai: r.delai, origine: r.origine,
+  destination: r.destination, volume: r.volume,
+  status: r.status, date: r.date, createdAt: r.created_at
+};
+
+app.post('/api/devis', async (req, res) => {
+  const { prenom, nom, email, tel, societe, pays, service,
+          description, budget, delai, origine, destination, volume } = req.body;
+  if (!prenom || !nom || !email || !tel || !service || !description) {
+    return res.status(400).json({ error: 'Champs obligatoires manquants.' });
+  }
+  const now = new Date().toISOString();
+  const row = {
+    id: `devis_${Date.now()}`,
+    prenom, nom, email, tel,
+    societe: societe || '', pays: pays || '',
+    service, description,
+    budget: budget || '', delai: delai || '',
+    origine: origine || '', destination: destination || '',
+    volume: volume || '',
+    status: 'nouveau', date: now, created_at: now
+  };
+  try {
+    const { error } = await supabase.from('devis').insert(row);
+    sbCheck({ error }, 'INSERT devis');
+    if (transporter) {
+      try {
+        await transporter.sendMail({
+          from: SMTP_USER || CONTACT_EMAIL,
+          to: CONTACT_EMAIL,
+          subject: `Nouveau devis — ${service} — ${prenom} ${nom}`,
+          html: `<h2>Nouvelle demande de devis</h2>
+            <p><b>Nom :</b> ${prenom} ${nom}</p>
+            <p><b>Email :</b> ${email}</p>
+            <p><b>Téléphone :</b> ${tel}</p>
+            <p><b>Société :</b> ${societe || '—'}</p>
+            <p><b>Pays :</b> ${pays || '—'}</p>
+            <p><b>Service :</b> ${service}</p>
+            <p><b>Budget :</b> ${budget || '—'}</p>
+            <p><b>Délai :</b> ${delai || '—'}</p>
+            <p><b>Origine :</b> ${origine || '—'}</p>
+            <p><b>Destination :</b> ${destination || '—'}</p>
+            <p><b>Volume/Quantité :</b> ${volume || '—'}</p>
+            <p><b>Description :</b><br>${description.replace(/\n/g,'<br>')}</p>`
+        });
+      } catch (e) { console.warn('Email devis non envoyé :', e.message); }
+    }
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Impossible d'enregistrer le devis." });
+  }
+});
+
+app.get('/api/devis', requireAuth, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('devis').select('*').order('date', { ascending: false });
+    sbCheck({ error }, 'GET devis');
+    return res.json((data || []).map(toDevis));
+  } catch (err) {
+    return res.status(500).json({ error: 'Impossible de charger les devis.' });
+  }
+});
+
+app.get('/api/devis/:id', requireAuth, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('devis').select('*').eq('id', req.params.id).maybeSingle();
+    sbCheck({ error }, 'GET devis by id');
+    if (!data) return res.status(404).json({ error: 'Devis non trouvé.' });
+    return res.json(toDevis(data));
+  } catch (err) {
+    return res.status(500).json({ error: 'Erreur serveur.' });
+  }
+});
+
+app.put('/api/devis/:id/status', requireAuth, async (req, res) => {
+  const { status } = req.body;
+  const valid = ['nouveau', 'en_cours', 'envoye', 'accepte', 'refuse'];
+  if (!valid.includes(status)) return res.status(400).json({ error: 'Statut invalide.' });
+  try {
+    const { error } = await supabase
+      .from('devis').update({ status }).eq('id', req.params.id);
+    sbCheck({ error }, 'UPDATE devis status');
+    return res.json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({ error: 'Impossible de mettre à jour.' });
+  }
+});
+
+app.delete('/api/devis/:id', requireAuth, async (req, res) => {
+  try {
+    const { error } = await supabase.from('devis').delete().eq('id', req.params.id);
+    sbCheck({ error }, 'DELETE devis');
+    return res.json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({ error: "Impossible de supprimer le devis." });
+  }
+});
+
 /* ── Démarrage ────────────────────────────────────────────── */
 initAdminPassword().then(() => {
   app.listen(port, () => {

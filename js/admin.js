@@ -117,6 +117,7 @@ async function showPanel(id) {
     'dashboard-home': 'Tableau de bord',
     'panel-news': 'Actualités',
     'panel-contacts': 'Demandes reçues',
+    'panel-devis': 'Demandes de devis',
     'panel-portfolio': 'Portfolio',
     'panel-settings': 'Paramètres'
   };
@@ -124,26 +125,148 @@ async function showPanel(id) {
 
   if (id === 'panel-contacts') await renderContacts();
   if (id === 'panel-news') await renderNews();
+  if (id === 'panel-devis') await renderDevis();
   if (id === 'dashboard-home') await refreshAll();
+}
+
+/* ══════════════════════════════════════════════════════════
+   DEVIS
+══════════════════════════════════════════════════════════ */
+const DEVIS_STATUS = {
+  nouveau:  { label: 'Nouveau',    cls: 'status-new' },
+  en_cours: { label: 'En cours',   cls: 'status-read' },
+  envoye:   { label: 'Envoyé',     cls: 'status-published' },
+  accepte:  { label: 'Accepté',    cls: 'status-published' },
+  refuse:   { label: 'Refusé',     cls: 'status-draft' }
+};
+
+async function renderDevis() {
+  try {
+    const devisList = await api('/devis', { method: 'GET' });
+    const tbody = document.getElementById('devis-table-body');
+    // Badge
+    const nouveaux = devisList.filter(d => d.status === 'nouveau').length;
+    const badge = document.getElementById('devis-badge');
+    if (nouveaux > 0) { badge.textContent = nouveaux; badge.style.display = 'flex'; }
+    else badge.style.display = 'none';
+    document.getElementById('stat-devis').textContent = devisList.length;
+
+    if (!devisList.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-file-invoice-dollar"></i><p>Aucun devis reçu.</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = devisList.map(d => {
+      const s = DEVIS_STATUS[d.status] || DEVIS_STATUS.nouveau;
+      return `<tr style="${d.status==='nouveau'?'font-weight:600;':''}">
+        <td><span class="status ${s.cls}"><span class="status-dot"></span>${s.label}</span></td>
+        <td>${escHtml(d.prenom+' '+d.nom)}</td>
+        <td style="font-size:.82rem;color:var(--texte-clair);">${escHtml(d.societe||'—')}</td>
+        <td><span style="background:rgba(91,45,142,.08);color:var(--violet);padding:.2rem .6rem;border-radius:50px;font-size:.78rem;font-weight:700;">${escHtml(d.service||'—')}</span></td>
+        <td style="font-size:.82rem;">${escHtml(d.budget||'—')}</td>
+        <td style="font-size:.8rem;color:var(--texte-clair);">${escHtml(formatDate(d.date))}</td>
+        <td>
+          <div class="td-actions">
+            <button class="btn btn-secondary btn-sm" onclick="openDevis('${d.id}')"><i class="fas fa-eye"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="deleteDevis('${d.id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch (err) {
+    console.error('Impossible de charger les devis :', err.message);
+  }
+}
+
+async function openDevis(id) {
+  try {
+    const d = await api(`/devis/${encodeURIComponent(id)}`, { method: 'GET' });
+    if (!d) return;
+    const s = DEVIS_STATUS[d.status] || DEVIS_STATUS.nouveau;
+    document.getElementById('devis-modal-body').innerHTML = `
+      <div class="detail-row"><div class="detail-label">Nom</div><div class="detail-value">${escHtml(d.prenom)} ${escHtml(d.nom)}</div></div>
+      <div class="detail-row"><div class="detail-label">Email</div><div class="detail-value"><a href="mailto:${escHtml(d.email)}" style="color:var(--violet);">${escHtml(d.email)}</a></div></div>
+      <div class="detail-row"><div class="detail-label">Téléphone</div><div class="detail-value">${escHtml(d.tel||'—')}</div></div>
+      <div class="detail-row"><div class="detail-label">Société</div><div class="detail-value">${escHtml(d.societe||'—')}</div></div>
+      <div class="detail-row"><div class="detail-label">Pays</div><div class="detail-value">${escHtml(d.pays||'—')}</div></div>
+      <div class="detail-row"><div class="detail-label">Service</div><div class="detail-value">${escHtml(d.service||'—')}</div></div>
+      <div class="detail-row"><div class="detail-label">Budget</div><div class="detail-value">${escHtml(d.budget||'—')}</div></div>
+      <div class="detail-row"><div class="detail-label">Délai</div><div class="detail-value">${escHtml(d.delai||'—')}</div></div>
+      ${d.origine ? `<div class="detail-row"><div class="detail-label">Origine</div><div class="detail-value">${escHtml(d.origine)}</div></div>` : ''}
+      ${d.destination ? `<div class="detail-row"><div class="detail-label">Destination</div><div class="detail-value">${escHtml(d.destination)}</div></div>` : ''}
+      ${d.volume ? `<div class="detail-row"><div class="detail-label">Volume</div><div class="detail-value">${escHtml(d.volume)}</div></div>` : ''}
+      <div class="detail-row"><div class="detail-label">Date</div><div class="detail-value">${escHtml(formatDate(d.date,true))}</div></div>
+      <div class="detail-row" style="flex-direction:column;">
+        <div class="detail-label" style="margin-bottom:.5rem;">Description</div>
+        <div class="detail-message">${escHtml(d.description||'—')}</div>
+      </div>
+    `;
+    document.getElementById('devis-modal-footer').innerHTML = `
+      <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;width:100%;">
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <label style="font-size:.82rem;font-weight:600;">Statut :</label>
+          <select id="devis-status-select" class="form-control" style="width:auto;padding:.4rem .8rem;font-size:.82rem;">
+            ${Object.entries(DEVIS_STATUS).map(([k,v])=>`<option value="${k}" ${d.status===k?'selected':''}>${v.label}</option>`).join('')}
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="updateDevisStatus('${d.id}')"><i class="fas fa-save"></i> Sauvegarder</button>
+        </div>
+        <a href="mailto:${escHtml(d.email)}?subject=Votre%20devis%20—%20Mosaïc%20International" class="btn btn-secondary"><i class="fas fa-reply"></i> Répondre</a>
+        <button class="btn btn-danger" style="margin-left:auto;" onclick="deleteDevis('${d.id}');closeDevisModal();"><i class="fas fa-trash"></i></button>
+      </div>
+    `;
+    document.getElementById('devis-modal').classList.add('open');
+  } catch (err) {
+    alert('Impossible d\'ouvrir le devis.');
+  }
+}
+
+async function updateDevisStatus(id) {
+  const status = document.getElementById('devis-status-select').value;
+  try {
+    await api(`/devis/${encodeURIComponent(id)}/status`, { method: 'PUT', body: { status } });
+    await renderDevis();
+    closeDevisModal();
+  } catch (err) {
+    alert('Impossible de mettre à jour le statut.');
+  }
+}
+
+async function deleteDevis(id) {
+  if (!confirm('Supprimer ce devis ?')) return;
+  try {
+    await api(`/devis/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    await renderDevis();
+    await refreshAll();
+  } catch (err) {
+    alert('Impossible de supprimer le devis.');
+  }
+}
+
+function closeDevisModal() {
+  document.getElementById('devis-modal').classList.remove('open');
 }
 
 async function refreshAll() {
   try {
-    const [news, contacts] = await Promise.all([getNews(), getContacts()]);
+    const [news, contacts, devisList] = await Promise.all([
+      getNews(), getContacts(),
+      api('/devis', { method: 'GET' }).catch(() => [])
+    ]);
     const unread = contacts.filter((contact) => contact.status === 'new').length;
+    const newDevis = devisList.filter(d => d.status === 'nouveau').length;
 
     document.getElementById('stat-news').textContent = news.filter((article) => article.status === 'published').length;
     document.getElementById('stat-total-contacts').textContent = contacts.length;
     document.getElementById('stat-unread').textContent = unread;
     document.getElementById('stat-portfolio').textContent = 9;
+    document.getElementById('stat-devis').textContent = devisList.length;
 
     const badge = document.getElementById('unread-badge');
-    if (unread > 0) {
-      badge.textContent = unread;
-      badge.style.display = 'flex';
-    } else {
-      badge.style.display = 'none';
-    }
+    if (unread > 0) { badge.textContent = unread; badge.style.display = 'flex'; }
+    else badge.style.display = 'none';
+
+    const devisBadge = document.getElementById('devis-badge');
+    if (newDevis > 0) { devisBadge.textContent = newDevis; devisBadge.style.display = 'flex'; }
+    else devisBadge.style.display = 'none';
 
     renderRecentContacts(contacts);
   } catch (error) {

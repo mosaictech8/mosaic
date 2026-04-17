@@ -519,6 +519,10 @@
         <i class="fas fa-envelope"></i> Demandes reçues
         <span class="badge-count" id="unread-badge" style="display:none;">0</span>
       </button>
+      <button class="nav-item" onclick="showPanel('panel-devis')" id="nav-devis">
+        <i class="fas fa-file-invoice-dollar"></i> Devis
+        <span class="badge-count" id="devis-badge" style="display:none;">0</span>
+      </button>
       <div class="nav-group-label">Paramètres</div>
       <button class="nav-item" onclick="showPanel('panel-settings')">
         <i class="fas fa-cog"></i> Paramètres
@@ -570,6 +574,13 @@
           <div class="stat-box-data">
             <div class="num" id="stat-unread">0</div>
             <div class="lbl">Non lues</div>
+          </div>
+        </div>
+        <div class="stat-box" style="cursor:pointer;" onclick="showPanel('panel-devis')">
+          <div class="stat-box-icon" style="background:rgba(240,165,0,.12);color:var(--or);"><i class="fas fa-file-invoice-dollar"></i></div>
+          <div class="stat-box-data">
+            <div class="num" id="stat-devis">0</div>
+            <div class="lbl">Devis reçus</div>
           </div>
         </div>
         <div class="stat-box">
@@ -749,6 +760,49 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+
+    <!-- ── Panel : Devis ── -->
+    <div class="panel" id="panel-devis">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <div>
+          <h3 style="font-family:'Montserrat',sans-serif;font-size:1.1rem;color:var(--marine);">Demandes de devis</h3>
+          <p style="font-size:0.82rem;color:var(--texte-clair);margin-top:0.2rem;">Devis reçus depuis le formulaire en ligne.</p>
+        </div>
+        <a href="devis.html" target="_blank" class="btn btn-secondary btn-sm"><i class="fas fa-external-link-alt"></i> Voir le formulaire</a>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Statut</th>
+                <th>Nom</th>
+                <th>Société</th>
+                <th>Service</th>
+                <th>Budget</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="devis-table-body">
+              <tr><td colspan="7"><div class="empty-state"><i class="fas fa-file-invoice-dollar"></i><p>Aucun devis reçu pour l'instant.</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Modal devis ── -->
+    <div class="modal" id="devis-modal">
+      <div class="modal-box" style="max-width:680px;">
+        <div class="modal-header">
+          <h3><i class="fas fa-file-invoice-dollar" style="color:var(--or);margin-right:.5rem;"></i>Détail du devis</h3>
+          <button class="modal-close" onclick="closeDevisModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="devis-modal-body"></div>
+        <div class="modal-footer" id="devis-modal-footer"></div>
       </div>
     </div>
 
