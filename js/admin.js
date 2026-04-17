@@ -200,6 +200,8 @@ async function openDevis(id) {
         <div class="detail-message">${escHtml(d.description||'—')}</div>
       </div>
     `;
+    // Store current devis data for PDF generation
+    window._currentDevis = d;
     document.getElementById('devis-modal-footer').innerHTML = `
       <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;width:100%;">
         <div style="display:flex;align-items:center;gap:.5rem;">
@@ -210,6 +212,7 @@ async function openDevis(id) {
           <button class="btn btn-primary btn-sm" onclick="updateDevisStatus('${d.id}')"><i class="fas fa-save"></i> Sauvegarder</button>
         </div>
         <a href="mailto:${escHtml(d.email)}?subject=Votre%20devis%20—%20Mosaïc%20International" class="btn btn-secondary"><i class="fas fa-reply"></i> Répondre</a>
+        <button class="btn btn-secondary" onclick="printDevis(window._currentDevis)" style="background:#f0f4ff;color:#3b4e9e;border-color:#c7d2f0;"><i class="fas fa-file-pdf"></i> Télécharger PDF</button>
         <button class="btn btn-danger" style="margin-left:auto;" onclick="deleteDevis('${d.id}');closeDevisModal();"><i class="fas fa-trash"></i></button>
       </div>
     `;
@@ -674,3 +677,134 @@ document.getElementById('contact-modal').addEventListener('click', (event) => {
     closeModal();
   }
 });
+
+document.getElementById('devis-modal').addEventListener('click', (event) => {
+  if (event.target === document.getElementById('devis-modal')) {
+    closeDevisModal();
+  }
+});
+
+function printDevis(d) {
+  if (!d) return;
+  const ref = 'DEV-' + (d.id || '').toUpperCase().slice(0, 8);
+  const dateStr = d.date ? new Date(d.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
+
+  const row = (label, value) => value && value !== '—'
+    ? `<tr><td class="lbl">${label}</td><td>${value}</td></tr>`
+    : '';
+
+  const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Devis ${ref} — Mosaïc International</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a2e; background:#fff; padding:40px; }
+
+  /* Header */
+  .header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #5b2d8e; padding-bottom:24px; margin-bottom:32px; }
+  .logo-block h1 { font-size:1.6rem; font-weight:800; color:#5b2d8e; letter-spacing:-.5px; }
+  .logo-block p { font-size:.78rem; color:#666; margin-top:2px; }
+  .ref-block { text-align:right; }
+  .ref-block .ref { font-size:1.1rem; font-weight:700; color:#5b2d8e; }
+  .ref-block .date { font-size:.8rem; color:#888; margin-top:4px; }
+
+  /* Status badge */
+  .badge { display:inline-block; padding:.3rem .9rem; border-radius:50px; font-size:.78rem; font-weight:700; margin-bottom:28px; }
+  .badge.nouveau  { background:#ede9fe; color:#6d28d9; }
+  .badge.en_cours { background:#dbeafe; color:#1d4ed8; }
+  .badge.envoye   { background:#d1fae5; color:#065f46; }
+  .badge.accepte  { background:#dcfce7; color:#166534; }
+  .badge.refuse   { background:#fee2e2; color:#991b1b; }
+
+  /* Section titles */
+  h2 { font-size:.82rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#5b2d8e; margin-bottom:10px; margin-top:28px; padding-bottom:6px; border-bottom:1px solid #ede9fe; }
+
+  /* Tables */
+  table { width:100%; border-collapse:collapse; margin-bottom:8px; }
+  td { padding:8px 10px; font-size:.88rem; vertical-align:top; }
+  td.lbl { width:38%; font-weight:600; color:#555; white-space:nowrap; }
+  tr:nth-child(even) td { background:#faf8ff; }
+
+  /* Description box */
+  .desc { background:#faf8ff; border-left:3px solid #5b2d8e; padding:12px 16px; font-size:.88rem; line-height:1.6; border-radius:0 6px 6px 0; white-space:pre-wrap; word-break:break-word; }
+
+  /* Footer */
+  .footer { margin-top:48px; border-top:1px solid #e5e7eb; padding-top:18px; display:flex; justify-content:space-between; font-size:.75rem; color:#aaa; }
+
+  /* Signature area */
+  .sign-block { margin-top:40px; display:flex; justify-content:space-between; gap:32px; }
+  .sign-col { flex:1; text-align:center; }
+  .sign-col .sign-line { border-bottom:1px solid #ccc; height:48px; margin-bottom:8px; }
+  .sign-col p { font-size:.78rem; color:#888; }
+
+  @media print {
+    body { padding:20px; }
+    button { display:none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo-block">
+      <h1>MOSAÏC INTERNATIONAL</h1>
+      <p>Solutions logistiques &amp; technologiques globales</p>
+    </div>
+    <div class="ref-block">
+      <div class="ref">${ref}</div>
+      <div class="date">Date : ${dateStr}</div>
+    </div>
+  </div>
+
+  <span class="badge ${d.status || 'nouveau'}">${{ nouveau:'Nouveau', en_cours:'En cours', envoye:'Envoyé', accepte:'Accepté', refuse:'Refusé' }[d.status] || 'Nouveau'}</span>
+
+  <h2>Informations du demandeur</h2>
+  <table>
+    ${row('Nom complet', (d.prenom || '') + ' ' + (d.nom || ''))}
+    ${row('Email', d.email)}
+    ${row('Téléphone', d.tel)}
+    ${row('Société', d.societe)}
+    ${row('Pays', d.pays)}
+  </table>
+
+  <h2>Détails de la demande</h2>
+  <table>
+    ${row('Service demandé', d.service)}
+    ${row('Budget estimé', d.budget)}
+    ${row('Délai souhaité', d.delai)}
+    ${row('Origine', d.origine)}
+    ${row('Destination', d.destination)}
+    ${row('Volume / Quantité', d.volume)}
+  </table>
+
+  <h2>Description du projet</h2>
+  <div class="desc">${(d.description || '—').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+
+  <div class="sign-block">
+    <div class="sign-col">
+      <div class="sign-line"></div>
+      <p>Signature du client</p>
+    </div>
+    <div class="sign-col">
+      <div class="sign-line"></div>
+      <p>Cachet &amp; Signature Mosaïc International</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Mosaïc International — Document confidentiel</span>
+    <span>Réf. ${ref}</span>
+  </div>
+
+  <script>window.onload = function(){ window.print(); };<\/script>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank', 'width=900,height=700');
+  if (!win) { alert('Veuillez autoriser les popups pour générer le PDF.'); return; }
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+}
