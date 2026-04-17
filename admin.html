@@ -765,12 +765,89 @@
 
     <!-- ── Panel : Devis ── -->
     <div class="panel" id="panel-devis">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem;">
         <div>
           <h3 style="font-family:'Montserrat',sans-serif;font-size:1.1rem;color:var(--marine);">Demandes de devis</h3>
-          <p style="font-size:0.82rem;color:var(--texte-clair);margin-top:0.2rem;">Devis reçus depuis le formulaire en ligne.</p>
+          <p style="font-size:0.82rem;color:var(--texte-clair);margin-top:0.2rem;">Devis reçus et créés manuellement.</p>
         </div>
-        <a href="devis.html" target="_blank" class="btn btn-secondary btn-sm"><i class="fas fa-external-link-alt"></i> Voir le formulaire</a>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="openDevisForm()"><i class="fas fa-plus"></i> Nouveau devis</button>
+          <a href="devis.html" target="_blank" class="btn btn-secondary btn-sm"><i class="fas fa-external-link-alt"></i> Formulaire public</a>
+        </div>
+      </div>
+
+      <!-- Formulaire création devis admin -->
+      <div class="card" id="devis-form-card" style="display:none;margin-bottom:1.5rem;border-color:var(--or);">
+        <div class="card-header" style="background:rgba(240,165,0,.04);">
+          <h3><i class="fas fa-file-invoice-dollar" style="color:var(--or);margin-right:.5rem;"></i>Nouveau devis</h3>
+          <button class="btn btn-secondary btn-sm" onclick="closeDevisForm()"><i class="fas fa-times"></i> Annuler</button>
+        </div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group"><label>Prénom *</label><input type="text" class="form-control" id="dv-prenom" placeholder="Jean"></div>
+            <div class="form-group"><label>Nom *</label><input type="text" class="form-control" id="dv-nom" placeholder="Dupont"></div>
+            <div class="form-group"><label>Email *</label><input type="email" class="form-control" id="dv-email" placeholder="jean@exemple.com"></div>
+            <div class="form-group"><label>Téléphone *</label><input type="tel" class="form-control" id="dv-tel" placeholder="+235 XX XX XX XX"></div>
+            <div class="form-group"><label>Société</label><input type="text" class="form-control" id="dv-societe" placeholder="Nom de la société"></div>
+            <div class="form-group"><label>Pays</label>
+              <select class="form-control" id="dv-pays">
+                <option value="">Sélectionner…</option>
+                <option>Tchad</option><option>Cameroun</option><option>RCA</option>
+                <option>Congo</option><option>Gabon</option><option>Niger</option>
+                <option>Nigeria</option><option>France</option><option>Autre</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Service *</label>
+              <select class="form-control" id="dv-service">
+                <option value="">Sélectionner…</option>
+                <option>Logistique & Transport</option>
+                <option>Transit & Douane</option>
+                <option>Import / Export</option>
+                <option>Réseaux Télécom</option>
+                <option>Génie Civil</option>
+                <option>Agrobusiness</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Budget estimé</label>
+              <select class="form-control" id="dv-budget">
+                <option value="">Non précisé</option>
+                <option>Moins de 1 M FCFA</option>
+                <option>1 – 5 M FCFA</option>
+                <option>5 – 20 M FCFA</option>
+                <option>20 – 50 M FCFA</option>
+                <option>Plus de 50 M FCFA</option>
+                <option>À définir</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Délai souhaité</label>
+              <select class="form-control" id="dv-delai">
+                <option value="">Non précisé</option>
+                <option>Urgent (< 1 semaine)</option>
+                <option>Court terme (1-4 semaines)</option>
+                <option>Moyen terme (1-3 mois)</option>
+                <option>Long terme (+ 3 mois)</option>
+                <option>Récurrent</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Statut</label>
+              <select class="form-control" id="dv-status">
+                <option value="nouveau">Nouveau</option>
+                <option value="en_cours">En cours</option>
+                <option value="envoye">Envoyé</option>
+                <option value="accepte">Accepté</option>
+                <option value="refuse">Refusé</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Origine</label><input type="text" class="form-control" id="dv-origine" placeholder="Ex : Douala, Cameroun"></div>
+            <div class="form-group"><label>Destination</label><input type="text" class="form-control" id="dv-destination" placeholder="Ex : N'Djaména, Tchad"></div>
+            <div class="form-group full"><label>Volume / Quantité</label><input type="text" class="form-control" id="dv-volume" placeholder="Ex : 20 tonnes, 1 conteneur…"></div>
+            <div class="form-group full"><label>Description *</label><textarea class="form-control" id="dv-description" rows="4" placeholder="Détails du besoin…"></textarea></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="saveDevisAdmin()"><i class="fas fa-save"></i> Enregistrer le devis</button>
+            <button class="btn btn-secondary" onclick="closeDevisForm()">Annuler</button>
+          </div>
+        </div>
       </div>
       <div class="card">
         <div class="table-wrap">

@@ -172,6 +172,7 @@
                   </select>
                 </div>
               </div>
+              <p id="step1-err" style="display:none;color:#dc2626;font-size:.82rem;margin-top:.75rem;background:rgba(220,38,38,.06);padding:.6rem .9rem;border-radius:8px;"></p>
               <div class="step-nav">
                 <div></div>
                 <button type="button" class="btn btn-primary" onclick="devisNextStep(2)">
@@ -236,7 +237,8 @@
               <div class="form-group">
                 <label>Description de votre besoin *</label>
                 <textarea name="description" class="form-control" rows="5"
-                  placeholder="Décrivez votre projet ou besoin en détail…" required></textarea>
+                  placeholder="Décrivez votre projet ou besoin en détail…"></textarea>
+                <p id="desc-err" style="display:none;color:#dc2626;font-size:.82rem;margin-top:.4rem;"></p>
               </div>
               <div class="step-nav">
                 <button type="button" class="btn btn-secondary" onclick="devisNextStep(1)">
@@ -546,111 +548,164 @@
 
   <script src="js/main.js"></script>
   <script>
-    /* ── Gestion multi-étapes ────────────────────────── */
-    let currentDevisStep = 1;
+    /* ── Helpers ─────────────────────────────────────── */
+    var _step = 1; // variable globale simple, pas de let/const
 
+    function _val(name) {
+      var el = document.getElementById('devisForm').elements[name];
+      return el ? el.value.trim() : '';
+    }
+    function _el(name) {
+      return document.getElementById('devisForm').elements[name] || null;
+    }
+    function _showErr(id, msg) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = msg;
+      el.style.display = msg ? '' : 'none';
+    }
+    function _setInvalid(name, invalid) {
+      var el = _el(name);
+      if (!el) return;
+      el.style.borderColor = invalid ? '#dc2626' : '';
+      el.style.background  = invalid ? 'rgba(220,38,38,.04)' : '';
+    }
+
+    /* ── Navigation étapes ───────────────────────────── */
     function devisNextStep(next) {
-      // Validation step 1
-      if (next === 2 && currentDevisStep === 1) {
-        const fields = ['prenom','nom','email','tel','societe'];
-        let ok = true;
-        fields.forEach(name => {
-          const el = document.querySelector(`[name="${name}"]`);
-          if (!el.value.trim()) { el.style.borderColor = '#dc2626'; ok = false; }
-          else el.style.borderColor = '';
-        });
-        if (!ok) { document.querySelector('[name="prenom"]').focus(); return; }
+      try {
+        /* Validation étape 1 → 2 */
+        if (next === 2 && _step === 1) {
+          var required1 = [
+            { name: 'prenom',  label: 'Prénom' },
+            { name: 'nom',     label: 'Nom' },
+            { name: 'email',   label: 'Email' },
+            { name: 'tel',     label: 'Téléphone' },
+            { name: 'societe', label: 'Société' }
+          ];
+          var errors1 = [];
+          required1.forEach(function(f) {
+            if (!_val(f.name)) { _setInvalid(f.name, true); errors1.push(f.label); }
+            else _setInvalid(f.name, false);
+          });
+          if (errors1.length) {
+            _showErr('step1-err', 'Champs requis : ' + errors1.join(', '));
+            return;
+          }
+          _showErr('step1-err', '');
+        }
+
+        /* Validation étape 2 → 3 */
+        if (next === 3 && _step === 2) {
+          var serviceChecked = document.querySelector('#devisForm [name="service"]:checked');
+          var descEl = _el('description');
+          var ok2 = true;
+          if (!serviceChecked) {
+            _showErr('service-err', 'Veuillez sélectionner un service.');
+            ok2 = false;
+          } else {
+            _showErr('service-err', '');
+          }
+          if (!descEl || !descEl.value.trim()) {
+            _setInvalid('description', true);
+            _showErr('desc-err', 'Veuillez décrire votre besoin.');
+            ok2 = false;
+          } else {
+            _setInvalid('description', false);
+            _showErr('desc-err', '');
+          }
+          if (!ok2) return;
+          buildRecap();
+        }
+
+        /* Transition */
+        var fromId  = 'step-' + _step;
+        var fromInd = 'step-ind-' + _step;
+        var toId    = 'step-' + next;
+        var toInd   = 'step-ind-' + next;
+
+        document.getElementById(fromId).classList.remove('active');
+        var fromIndEl = document.getElementById(fromInd);
+        if (fromIndEl) { fromIndEl.classList.remove('active'); fromIndEl.classList.add('done'); }
+
+        _step = next;
+
+        document.getElementById(toId).classList.add('active');
+        var toIndEl = document.getElementById(toInd);
+        if (toIndEl) { toIndEl.classList.add('active'); toIndEl.classList.remove('done'); }
+
+        var wrap = document.querySelector('.devis-form-wrap');
+        if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      } catch (err) {
+        console.error('devisNextStep error:', err);
+        alert('Une erreur est survenue. Actualisez la page et réessayez.');
       }
-
-      // Validation step 2
-      if (next === 3 && currentDevisStep === 2) {
-        const service = document.querySelector('[name="service"]:checked');
-        const desc = document.querySelector('[name="description"]');
-        if (!service) { document.getElementById('service-err').style.display = ''; return; }
-        document.getElementById('service-err').style.display = 'none';
-        if (!desc.value.trim()) { desc.style.borderColor = '#dc2626'; desc.focus(); return; }
-        desc.style.borderColor = '';
-        buildRecap();
-      }
-
-      // Transition
-      document.getElementById(`step-${currentDevisStep}`).classList.remove('active');
-      document.getElementById(`step-ind-${currentDevisStep}`).classList.remove('active');
-      document.getElementById(`step-ind-${currentDevisStep}`).classList.add('done');
-
-      currentDevisStep = next;
-      document.getElementById(`step-${currentDevisStep}`).classList.add('active');
-      document.getElementById(`step-ind-${currentDevisStep}`).classList.add('active');
-      document.getElementById(`step-ind-${currentDevisStep}`).classList.remove('done');
-
-      document.querySelector('.devis-form-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function buildRecap() {
-      const f = document.getElementById('devisForm');
-      const get = name => f.querySelector(`[name="${name}"]`)?.value?.trim() || '';
-      const serviceEl = f.querySelector('[name="service"]:checked');
-      const rows = [
-        { label: 'Nom', value: `${get('prenom')} ${get('nom')}` },
-        { label: 'Email', value: get('email') },
-        { label: 'Société', value: get('societe') },
-        { label: 'Service', value: serviceEl?.value || '' },
-      ].filter(r => r.value);
-      document.getElementById('recap-content').innerHTML = rows.map(r =>
-        `<div class="recap-row"><span class="recap-label">${r.label} :</span><span class="recap-value">${r.value}</span></div>`
-      ).join('');
+      var serviceEl = document.querySelector('#devisForm [name="service"]:checked');
+      var rows = [
+        { label: 'Nom complet', value: (_val('prenom') + ' ' + _val('nom')).trim() },
+        { label: 'Email',       value: _val('email') },
+        { label: 'Société',     value: _val('societe') },
+        { label: 'Service',     value: serviceEl ? serviceEl.value : '' }
+      ].filter(function(r) { return r.value; });
+      var rc = document.getElementById('recap-content');
+      if (rc) rc.innerHTML = rows.map(function(r) {
+        return '<div class="recap-row"><span class="recap-label">' + r.label + ' :</span><span class="recap-value">' + r.value + '</span></div>';
+      }).join('');
     }
 
     /* ── Soumission ─────────────────────────────────── */
-    document.getElementById('devisForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const f = e.target;
-      const get = name => f.querySelector(`[name="${name}"]`)?.value?.trim() || '';
-      const serviceEl = f.querySelector('[name="service"]:checked');
-
-      if (!f.querySelector('[name="rgpd"]').checked) {
-        alert('Veuillez accepter la politique de confidentialité.');
-        return;
-      }
-
-      const payload = {
-        prenom: get('prenom'), nom: get('nom'),
-        email: get('email'), tel: get('tel'),
-        societe: get('societe'), pays: get('pays'),
-        service: serviceEl?.value || '',
-        description: get('description'),
-        budget: get('budget'), delai: get('delai'),
-        origine: get('origine'), destination: get('destination'),
-        volume: get('volume')
-      };
-
-      const btn = document.getElementById('devis-submit-btn');
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours…';
-      btn.disabled = true;
-
-      try {
-        const res = await fetch('/api/devis', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const result = await res.json();
-        if (!res.ok) throw new Error(result.error || 'Erreur serveur');
-
-        f.style.display = 'none';
-        document.querySelector('.devis-steps').style.display = 'none';
-        document.getElementById('success-prenom').textContent = payload.prenom;
-        document.getElementById('devis-success').style.display = '';
-      } catch (err) {
-        btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erreur, réessayez';
-        btn.style.background = '#dc2626';
-        btn.disabled = false;
-        setTimeout(() => {
-          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer ma demande';
-          btn.style.background = '';
+    document.addEventListener('DOMContentLoaded', function() {
+      var form = document.getElementById('devisForm');
+      if (!form) return;
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var serviceEl = form.querySelector('[name="service"]:checked');
+        var rgpd = form.elements['rgpd'];
+        if (!rgpd || !rgpd.checked) {
+          alert('Veuillez accepter la politique de confidentialité.');
+          return;
+        }
+        var payload = {
+          prenom: _val('prenom'), nom: _val('nom'),
+          email: _val('email'), tel: _val('tel'),
+          societe: _val('societe'), pays: _val('pays'),
+          service: serviceEl ? serviceEl.value : '',
+          description: _val('description'),
+          budget: _val('budget'), delai: _val('delai'),
+          origine: _val('origine'), destination: _val('destination'),
+          volume: _val('volume')
+        };
+        var btn = document.getElementById('devis-submit-btn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours…';
+        btn.disabled = true;
+        try {
+          var res = await fetch('/api/devis', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          var result = await res.json();
+          if (!res.ok) throw new Error(result.error || 'Erreur serveur');
+          form.style.display = 'none';
+          document.querySelector('.devis-steps').style.display = 'none';
+          var sp = document.getElementById('success-prenom');
+          if (sp) sp.textContent = payload.prenom;
+          document.getElementById('devis-success').style.display = '';
+        } catch (err) {
+          btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erreur, réessayez';
+          btn.style.background = '#dc2626';
           btn.disabled = false;
-        }, 3000);
-      }
+          setTimeout(function() {
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer ma demande';
+            btn.style.background = '';
+            btn.disabled = false;
+          }, 3000);
+        }
+      });
     });
   </script>
 </body>

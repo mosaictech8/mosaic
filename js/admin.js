@@ -245,6 +245,61 @@ function closeDevisModal() {
   document.getElementById('devis-modal').classList.remove('open');
 }
 
+function openDevisForm() {
+  const card = document.getElementById('devis-form-card');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior: 'smooth' });
+  // Reset
+  ['prenom','nom','email','tel','societe','origine','destination','volume','description'].forEach(id => {
+    const el = document.getElementById('dv-' + id);
+    if (el) el.value = '';
+  });
+  ['pays','service','budget','delai'].forEach(id => {
+    const el = document.getElementById('dv-' + id);
+    if (el) el.value = '';
+  });
+  document.getElementById('dv-status').value = 'nouveau';
+}
+
+function closeDevisForm() {
+  document.getElementById('devis-form-card').style.display = 'none';
+}
+
+async function saveDevisAdmin() {
+  const g = id => (document.getElementById('dv-' + id)?.value || '').trim();
+  if (!g('prenom') || !g('nom') || !g('email') || !g('tel') || !g('service') || !g('description')) {
+    alert('Prénom, nom, email, téléphone, service et description sont obligatoires.');
+    return;
+  }
+  const payload = {
+    prenom: g('prenom'), nom: g('nom'), email: g('email'), tel: g('tel'),
+    societe: g('societe'), pays: g('pays'), service: g('service'),
+    description: g('description'), budget: g('budget'), delai: g('delai'),
+    origine: g('origine'), destination: g('destination'), volume: g('volume')
+  };
+  try {
+    await api('/devis', { method: 'POST', body: payload });
+    // Mettre à jour le statut si différent de "nouveau"
+    const status = document.getElementById('dv-status').value;
+    if (status !== 'nouveau') {
+      const devisList = await api('/devis', { method: 'GET' });
+      const last = devisList[0];
+      if (last) await api(`/devis/${encodeURIComponent(last.id)}/status`, { method: 'PUT', body: { status } });
+    }
+    closeDevisForm();
+    await renderDevis();
+    await refreshAll();
+    const alertEl = document.createElement('div');
+    alertEl.className = 'alert alert-success';
+    alertEl.style.cssText = 'position:fixed;top:80px;right:24px;z-index:9999;padding:.85rem 1.25rem;border-radius:10px;background:#dcfce7;color:#166534;border:1px solid #86efac;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.12);';
+    alertEl.innerHTML = '<i class="fas fa-check-circle"></i> Devis créé avec succès !';
+    document.body.appendChild(alertEl);
+    setTimeout(() => alertEl.remove(), 3000);
+  } catch (err) {
+    alert('Erreur : ' + err.message);
+  }
+}
+
 async function refreshAll() {
   try {
     const [news, contacts, devisList] = await Promise.all([
