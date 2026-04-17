@@ -547,19 +547,64 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
 
-  /* ── Parallax hero au mousemove ──────────────────────────── */
+  /* ── Parallax hero au mousemove + spotlight curseur ─────── */
   const heroBg = document.querySelector('.hero-bg');
   const heroSection = document.querySelector('.hero');
-  if (heroBg && heroSection && !prefersReducedMotion) {
+  if (heroSection && !prefersReducedMotion) {
+    /* Spotlight */
+    const spotlight = document.createElement('div');
+    spotlight.className = 'hero-spotlight';
+    heroSection.appendChild(spotlight);
+
+    let spotX = -999, spotY = -999;
     heroSection.addEventListener('mousemove', (e) => {
       const r = heroSection.getBoundingClientRect();
-      const x = ((e.clientX - r.left) / r.width  - 0.5) * 18;
-      const y = ((e.clientY - r.top)  / r.height - 0.5) *  9;
-      heroBg.style.transform = `translate(${x}px, ${y}px)`;
+      spotX = e.clientX - r.left;
+      spotY = e.clientY - r.top;
+      spotlight.style.left = spotX + 'px';
+      spotlight.style.top  = spotY + 'px';
+      spotlight.style.opacity = '1';
+
+      if (heroBg) {
+        const x = ((e.clientX - r.left) / r.width  - 0.5) * 18;
+        const y = ((e.clientY - r.top)  / r.height - 0.5) *  9;
+        heroBg.style.transform = `translate(${x}px, ${y}px)`;
+      }
     });
     heroSection.addEventListener('mouseleave', () => {
-      heroBg.style.transform = '';
+      spotlight.style.opacity = '0';
+      if (heroBg) heroBg.style.transform = '';
     });
+  }
+
+  /* ── Compteurs KPI hero ──────────────────────────────────── */
+  const kpiItems = [
+    { sel: '.kpi-item:nth-child(1) strong', end: 10,  suffix: '+' },
+    { sel: '.kpi-item:nth-child(3) strong', end: 500, suffix: '+' },
+    { sel: '.kpi-item:nth-child(5) strong', end: 6,   suffix: ''  },
+    { sel: '.kpi-item:nth-child(7) strong', end: 6,   suffix: ''  }
+  ];
+  const kpisEl = document.querySelector('.hero-kpis');
+  if (kpisEl) {
+    const kpiObserver = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      kpiObserver.disconnect();
+      kpiItems.forEach(({ sel, end }) => {
+        const el = document.querySelector(sel);
+        if (!el || el._counted) return;
+        el._counted = true;
+        const sup = el.querySelector('sup');
+        let v = 0;
+        const step = Math.max(1, Math.ceil(end / 50));
+        const id = setInterval(() => {
+          v = Math.min(v + step, end);
+          el.firstChild.textContent = v;
+          if (sup) el.appendChild(sup);
+          if (v >= end) clearInterval(id);
+        }, 30);
+      });
+    }, { threshold: 0.4 });
+    kpiObserver.observe(kpisEl);
   }
 
   /* ── Boutons magnétiques ─────────────────────────────────── */
@@ -572,6 +617,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.style.transform = `translate(${x}px, ${y}px)`;
       });
       btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+    });
+  }
+
+  /* ── Révélation mot par mot des titres de section ───────── */
+  if (!prefersReducedMotion) {
+    document.querySelectorAll('.section-header h2').forEach(h2 => {
+      const words = h2.innerHTML.split(/(\s+)/);
+      let wi = 0;
+      h2.innerHTML = words.map(w => {
+        if (/^\s+$/.test(w)) return w;
+        return `<span class="word-reveal" style="--wi:${wi++}">${w}</span>`;
+      }).join('');
     });
   }
 

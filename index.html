@@ -98,7 +98,9 @@
   <header class="hero" role="banner">
     <div class="hero-bg"></div>
     <div class="hero-beam" aria-hidden="true"></div>
-    <div class="hero-stars" id="hero-stars" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-3" aria-hidden="true"></div>
 
     <div class="container hero-layout">
 
@@ -875,58 +877,6 @@
   <button class="back-top" aria-label="Retour en haut"><i class="fas fa-chevron-up"></i></button>
 
   <script src="js/main.js"></script>
-  <script>
-    /* ── Étoiles scintillantes hero ─────────────────────── */
-    (function(){
-      const wrap = document.getElementById('hero-stars');
-      if (!wrap) return;
-      for (let i = 0; i < 30; i++) {
-        const s = document.createElement('div');
-        s.className = 'star';
-        s.style.cssText =
-          'left:' + (Math.random() * 100) + '%;' +
-          'top:'  + (Math.random() * 100) + '%;' +
-          '--dur:' + (2 + Math.random() * 4).toFixed(1) + 's;' +
-          '--delay:' + (Math.random() * 6).toFixed(1) + 's;' +
-          'width:' + (1 + Math.random() * 2).toFixed(1) + 'px;' +
-          'height:' + (1 + Math.random() * 2).toFixed(1) + 'px;';
-        wrap.appendChild(s);
-      }
-    })();
-
-    /* ── Compteurs animés KPI ───────────────────────────── */
-    (function(){
-      const items = [
-        { sel: '.kpi-item:nth-child(1) strong', end: 10, suffix: '+' },
-        { sel: '.kpi-item:nth-child(3) strong', end: 500, suffix: '+' },
-        { sel: '.kpi-item:nth-child(5) strong', end: 6,   suffix: ''  },
-        { sel: '.kpi-item:nth-child(7) strong', end: 6,   suffix: ''  }
-      ];
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) return;
-          io.unobserve(entry.target);
-          items.forEach(({ sel, end, suffix }) => {
-            const el = document.querySelector(sel);
-            if (!el || el._counted) return;
-            el._counted = true;
-            const sup = el.querySelector('sup');
-            let start = 0;
-            const duration = 1200;
-            const step = Math.ceil(end / 40);
-            const timer = setInterval(() => {
-              start += step;
-              if (start >= end) { start = end; clearInterval(timer); }
-              el.childNodes[0].textContent = start;
-              if (sup) el.appendChild(sup);
-            }, duration / 40);
-          });
-        });
-      }, { threshold: 0.3 });
-      const kpis = document.querySelector('.hero-kpis');
-      if (kpis) io.observe(kpis);
-    })();
-  </script>
 </body>
 </html>
 
