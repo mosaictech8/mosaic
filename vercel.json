@@ -5,7 +5,7 @@
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/server.js" },
-    { "src": "/(.*\\.(html|css|js|png|jpg|jpeg|gif|svg|ico|pdf|woff|woff2|ttf))", "dest": "/$1" },
+    { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/server.js" }
   ],
   "crons": [

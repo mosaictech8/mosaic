@@ -6,7 +6,7 @@
 (function () {
   const loader = document.createElement('div');
   loader.id = 'page-loader';
-  loader.innerHTML = '<div class="loader-inner"><img src="images/cropped-LOGO-moaic.png" alt="Mosaïc" class="loader-logo"><div class="loader-bar"><div class="loader-bar-fill"></div></div></div>';
+  loader.innerHTML = '<div class="loader-inner"><img src="images/logo/cropped-LOGO-moaic.png" alt="Mosaïc" class="loader-logo"><div class="loader-bar"><div class="loader-bar-fill"></div></div></div>';
   document.body.prepend(loader);
   window.addEventListener('load', () => {
     setTimeout(() => loader.classList.add('hidden'), 350);
@@ -18,15 +18,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const NEWS_FALLBACK_IMAGES = {
-    'Logistique': 'images/Equipe-de-Mosaic-International_logistique-petroliere.png',
-    'Transit & Douane': 'images/Equipe-de-Mosaic-International_logistique-petroliere2.png',
-    'Télécom': 'images/Equipe-de-technicien-de-Mosaic-sur-le-terrain-2.png',
-    'Génie Civil': 'images/Equipe-Mosaic-sur-le-terrain.png',
-    'Agrobusiness': 'images/WhatsApp-Image-2023-10-06-at-2.20.45-PM-1-1-qfhedz1n3cb2idzkvik3xb4dkqi4g7q55x1w97lbbc.jpeg',
-    'Entreprise': 'images/pdg mosaic.png',
-    'Actualité entreprise': 'images/pdg mosaic.png'
+    'Logistique': 'images/operations/logistique-petroliere-1.png',
+    'Transit & Douane': 'images/operations/logistique-petroliere-2.png',
+    'Télécom': 'images/operations/techniciens-terrain-2.png',
+    'Génie Civil': 'images/operations/equipe-terrain.png',
+    'Agrobusiness': 'images/operations/reunion-equipe-2.jpg',
+    'Entreprise': 'images/team/pdg-mosaic.png',
+    'Actualité entreprise': 'images/team/pdg-mosaic.png'
   };
-  const DEFAULT_NEWS_IMAGE = 'images/Equipe-Mosaic-sur-le-terrain.png';
+  const DEFAULT_NEWS_IMAGE = 'images/operations/equipe-terrain.png';
 
   const fetchPublishedNews = async () => {
     try {

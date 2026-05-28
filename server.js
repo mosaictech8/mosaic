@@ -146,7 +146,7 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
 
 /* ══════════════════════════════════════════════════════════
    KEEP-ALIVE (ping Supabase pour éviter la mise en pause)
