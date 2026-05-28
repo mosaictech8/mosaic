@@ -1222,6 +1222,40 @@ p { margin-bottom: 1rem; color: var(--texte-clair); }
   color: var(--violet);
   box-shadow: var(--ombre);
 }
+.client-logo-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  height: 64px;
+  padding: 0.5rem 1rem;
+  background: var(--blanc);
+  border: 1px solid var(--gris);
+  border-radius: 12px;
+  transition: all var(--transition);
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+.client-logo-item:hover {
+  filter: grayscale(0);
+  opacity: 1;
+  border-color: var(--violet);
+  box-shadow: var(--ombre);
+  transform: translateY(-2px);
+}
+.client-logo-item img {
+  max-height: 44px;
+  max-width: 110px;
+  object-fit: contain;
+}
+.client-logo-fallback {
+  font-weight: 800;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  color: var(--marine);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 
 /* ── Actualités ─────────────────────────────────────────── */
 .blog-grid {

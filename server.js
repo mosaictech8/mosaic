@@ -1,9 +1,9 @@
 require('dotenv').config();
 const express          = require('express');
-const session          = require('express-session');
 const { createClient } = require('@supabase/supabase-js');
 const bcrypt           = require('bcryptjs');
 const nodemailer       = require('nodemailer');
+const jwt              = require('jsonwebtoken');
 const path             = require('path');
 
 const app  = express();
@@ -26,7 +26,7 @@ console.log('Supabase connecté :', SUPABASE_URL);
 /* ── Variables d'environnement ────────────────────────────── */
 const ADMIN_USER     = process.env.ADMIN_USER     || 'admin';
 const ADMIN_PASS     = process.env.ADMIN_PASS     || 'Mosaic2026!';
-const SESSION_SECRET = process.env.SESSION_SECRET || 'change-this-secret';
+const JWT_SECRET     = process.env.JWT_SECRET     || process.env.SESSION_SECRET || 'mosaic-jwt-secret-2026';
 const CONTACT_EMAIL  = process.env.CONTACT_EMAIL  || 'contact@mozaikinternational.com';
 const SMTP_HOST      = process.env.SMTP_HOST      || '';
 const SMTP_PORT      = Number(process.env.SMTP_PORT || 587);
@@ -47,14 +47,6 @@ const hashPassword    = (p) => bcrypt.hashSync(p, 10);
 const comparePassword = (p, h) => bcrypt.compareSync(p, h);
 
 /* ── Mappers DB (snake_case) ↔ API (camelCase) ───────────── */
-/*
-   Colonnes DB utilisées :
-   contacts : id, prenom, nom, email, tel, societe, pays, service,
-              budget, message, status, date, source_page, created_at
-   news     : id, title, category, status, excerpt, content, author,
-              date, image_data, created_at
-   settings : key, value
-*/
 const toContact = (r) => !r ? null : {
   id: r.id, prenom: r.prenom, nom: r.nom,
   email: r.email, tel: r.tel, societe: r.societe,
@@ -77,6 +69,18 @@ const sbCheck = ({ error }, label) => {
     throw new Error(error.message);
   }
 };
+
+/* ── JWT helpers ──────────────────────────────────────────── */
+const COOKIE_NAME = 'mosaic_auth';
+const COOKIE_OPTS = {
+  httpOnly: true,
+  sameSite: 'lax',
+  maxAge: 24 * 60 * 60 * 1000,
+  secure: process.env.NODE_ENV === 'production'
+};
+
+const signToken  = () => jwt.sign({ isAdmin: true }, JWT_SECRET, { expiresIn: '24h' });
+const verifyToken = (token) => { try { return jwt.verify(token, JWT_SECRET); } catch { return null; } };
 
 /* ── Init mot de passe admin ──────────────────────────────── */
 const initAdminPassword = async () => {
@@ -122,23 +126,42 @@ const sendContactMail = async (c) => {
 
 /* ── Auth middleware ──────────────────────────────────────── */
 const requireAuth = (req, res, next) => {
-  if (req.session && req.session.isAdmin) return next();
+  const token = req.cookies?.[COOKIE_NAME] || req.headers['authorization']?.replace('Bearer ', '');
+  if (token && verifyToken(token)) return next();
   return res.status(401).json({ error: 'Unauthorized' });
 };
 
 /* ── Express ──────────────────────────────────────────────── */
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(session({
-  secret: SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: { maxAge: 24 * 60 * 60 * 1000 }
-}));
+
+/* Cookie parser léger sans dépendance externe */
+app.use((req, _res, next) => {
+  req.cookies = {};
+  const raw = req.headers.cookie || '';
+  raw.split(';').forEach(part => {
+    const [k, ...v] = part.trim().split('=');
+    if (k) req.cookies[k.trim()] = decodeURIComponent(v.join('=').trim());
+  });
+  next();
+});
+
 app.use(express.static(path.join(__dirname)));
 
 /* ══════════════════════════════════════════════════════════
-   AUTH
+   KEEP-ALIVE (ping Supabase pour éviter la mise en pause)
+══════════════════════════════════════════════════════════ */
+app.get('/api/ping', async (_req, res) => {
+  try {
+    await supabase.from('settings').select('key').limit(1);
+    return res.json({ ok: true, ts: new Date().toISOString() });
+  } catch {
+    return res.json({ ok: false, ts: new Date().toISOString() });
+  }
+});
+
+/* ══════════════════════════════════════════════════════════
+   AUTH (JWT — compatible serverless Vercel)
 ══════════════════════════════════════════════════════════ */
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
@@ -152,19 +175,22 @@ app.post('/api/login', async (req, res) => {
     if (!data?.value || !comparePassword(password, data.value)) {
       return res.status(401).json({ error: 'Identifiants invalides' });
     }
-    req.session.isAdmin = true;
+    const token = signToken();
+    res.cookie(COOKIE_NAME, token, COOKIE_OPTS);
     return res.json({ authenticated: true });
   } catch (err) {
     return res.status(500).json({ error: 'Erreur serveur' });
   }
 });
 
-app.post('/api/logout', requireAuth, (req, res) => {
-  req.session.destroy(() => res.json({ ok: true }));
+app.post('/api/logout', (_req, res) => {
+  res.clearCookie(COOKIE_NAME);
+  return res.json({ ok: true });
 });
 
 app.get('/api/session', (req, res) => {
-  res.json({ authenticated: Boolean(req.session && req.session.isAdmin) });
+  const token = req.cookies?.[COOKIE_NAME];
+  res.json({ authenticated: Boolean(token && verifyToken(token)) });
 });
 
 /* ══════════════════════════════════════════════════════════
@@ -274,8 +300,7 @@ app.put('/api/contacts/:id/status', requireAuth, async (req, res) => {
 
 app.delete('/api/contacts/:id', requireAuth, async (req, res) => {
   try {
-    const { error } = await supabase
-      .from('contacts').delete().eq('id', req.params.id);
+    const { error } = await supabase.from('contacts').delete().eq('id', req.params.id);
     sbCheck({ error }, 'DELETE contact');
     return res.json({ ok: true });
   } catch (err) {
@@ -299,7 +324,8 @@ app.delete('/api/contacts', requireAuth, async (req, res) => {
 ══════════════════════════════════════════════════════════ */
 app.get('/api/news', async (req, res) => {
   try {
-    const isAdmin = req.session && req.session.isAdmin;
+    const token = req.cookies?.[COOKIE_NAME];
+    const isAdmin = Boolean(token && verifyToken(token));
     let q = supabase.from('news').select('*').order('date', { ascending: false });
     if (!isAdmin) q = q.eq('status', 'published');
     const { data, error } = await q;
