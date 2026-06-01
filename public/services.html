@@ -72,6 +72,31 @@
     .service-avantages ul { display: flex; flex-direction: column; gap: 0.5rem; }
     .service-avantages li { display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; color: rgba(255,255,255,0.85); }
     .service-avantages li i { color: var(--or); }
+    .service-photos-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+    }
+    .service-photos-strip img {
+      border-radius: 10px;
+      height: 130px;
+      width: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+    .service-photos-strip img:hover {
+      transform: scale(1.04);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+    @media (max-width: 900px) {
+      .service-photos-strip { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .service-photos-strip { grid-template-columns: repeat(2, 1fr); }
+      .service-photos-strip img { height: 100px; }
+    }
     @media (max-width: 900px) {
       .service-detail-grid { grid-template-columns: 1fr; }
       .service-detail-grid.reverse { direction: ltr; }
@@ -164,7 +189,9 @@
   <div class="container">
     <div class="service-detail" id="telecom">
       <div class="service-detail-grid" data-animate>
-        <div class="service-detail-visual sv4"><i class="fas fa-satellite-dish"></i></div>
+        <div class="service-detail-visual" style="padding:0; position:relative;">
+          <img src="images/telecom/telecom-terrain-01.jpg" alt="Mission télécom terrain Mosaïc International" class="media-cover" style="border-radius:16px;">
+        </div>
         <div class="service-detail-content">
           <span class="badge badge-violet">Activité 01</span>
           <h2>Télécommunications</h2>
@@ -189,6 +216,13 @@
             </ul>
           </div>
         </div>
+      </div>
+      <!-- Galerie photos terrain télécom -->
+      <div class="service-photos-strip" data-animate>
+        <img src="images/telecom/telecom-terrain-02.jpg" alt="Travaux infrastructure télécom">
+        <img src="images/telecom/telecom-terrain-04.jpg" alt="Techniciens sur le terrain">
+        <img src="images/telecom/telecom-terrain-07.jpg" alt="Installation antenne BTS">
+        <img src="images/telecom/telecom-terrain-10.jpg" alt="Déploiement réseau télécom">
       </div>
     </div>
 
@@ -319,7 +353,9 @@
     <!-- ══ LOGISTIQUE PÉTROLIÈRE ══ -->
     <div class="service-detail" id="petrole">
       <div class="service-detail-grid reverse" data-animate>
-        <div class="service-detail-visual sv1"><i class="fas fa-oil-can"></i></div>
+        <div class="service-detail-visual" style="padding:0; position:relative;">
+          <img src="images/transport/transport-01.jpg" alt="Flotte de transport Mosaïc International" class="media-cover" style="border-radius:16px;">
+        </div>
         <div class="service-detail-content">
           <span class="badge badge-or">Activité 06</span>
           <h2>Logistique Pétrolière & Refueling</h2>
@@ -350,7 +386,9 @@
     <!-- ══ TRANSIT & LOGISTIQUE (compétence transverse) ══ -->
     <div class="service-detail" id="transit">
       <div class="service-detail-grid" data-animate>
-        <div class="service-detail-visual sv2" style="background: linear-gradient(135deg,#444,#222);"><i class="fas fa-truck"></i></div>
+        <div class="service-detail-visual" style="padding:0; position:relative;">
+          <img src="images/transport/transport-05.jpg" alt="Transport et logistique Mosaïc International" class="media-cover" style="border-radius:16px;">
+        </div>
         <div class="service-detail-content">
           <span class="badge badge-violet">Compétence transverse</span>
           <h2>Transit, Transport & Logistique</h2>

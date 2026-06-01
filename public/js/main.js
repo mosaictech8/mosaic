@@ -18,15 +18,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const NEWS_FALLBACK_IMAGES = {
-    'Logistique': 'images/operations/logistique-petroliere-1.png',
-    'Transit & Douane': 'images/operations/logistique-petroliere-2.png',
-    'Télécom': 'images/operations/techniciens-terrain-2.png',
+    'Logistique': 'images/transport/transport-03.jpg',
+    'Transit & Douane': 'images/transport/transport-10.jpg',
+    'Transport': 'images/transport/transport-01.jpg',
+    'Télécom': 'images/telecom/telecom-terrain-05.jpg',
     'Génie Civil': 'images/operations/equipe-terrain.png',
     'Agrobusiness': 'images/operations/reunion-equipe-2.jpg',
     'Entreprise': 'images/team/pdg-mosaic.png',
     'Actualité entreprise': 'images/team/pdg-mosaic.png'
   };
-  const DEFAULT_NEWS_IMAGE = 'images/operations/equipe-terrain.png';
+  const DEFAULT_NEWS_IMAGE = 'images/telecom/telecom-terrain-09.jpg';
 
   const fetchPublishedNews = async () => {
     try {
