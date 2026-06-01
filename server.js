@@ -17,10 +17,18 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
   console.error('SUPABASE_URL et SUPABASE_SERVICE_KEY sont requis dans .env');
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
-  auth: { persistSession: false }
-});
-console.log('Supabase connecté :', SUPABASE_URL);
+let supabase;
+try {
+  supabase = createClient(
+    SUPABASE_URL  || 'https://placeholder.supabase.co',
+    SUPABASE_SERVICE_KEY || 'placeholder-key',
+    { auth: { persistSession: false } }
+  );
+  console.log('Supabase init :', SUPABASE_URL || '(no URL set)');
+} catch (e) {
+  console.error('Supabase createClient failed:', e.message);
+  supabase = null;
+}
 
 /* ── Variables d'environnement ────────────────────────────── */
 const ADMIN_USER     = process.env.ADMIN_USER     || 'admin';
@@ -83,6 +91,7 @@ const verifyToken = (token) => { try { return jwt.verify(token, JWT_SECRET); } c
 
 /* ── Init mot de passe admin ──────────────────────────────── */
 const initAdminPassword = async () => {
+  if (!supabase || !SUPABASE_URL) return;
   const { data } = await supabase
     .from('settings')
     .select('value')
