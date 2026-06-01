@@ -156,6 +156,11 @@ app.use((req, _res, next) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+/* Route /admin → admin.html */
+app.get('/admin', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
 /* ══════════════════════════════════════════════════════════
    KEEP-ALIVE (ping Supabase pour éviter la mise en pause)
 ══════════════════════════════════════════════════════════ */
