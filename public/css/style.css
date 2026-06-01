@@ -3148,3 +3148,195 @@ img, video, iframe { max-width: 100%; }
 .btn-primary:hover::before, .btn-violet:hover::before, .btn-or:hover::before {
   transform: translateX(100%);
 }
+
+/* ===================================================================
+   MOBILE PREMIUM — Couleurs identiques desktop, visuels riches
+   =================================================================== */
+
+/* ── Photo strip terrain dans le hero (caché sur desktop) ── */
+.hero-mobile-photos { display: none; }
+
+/* ── Hero background — gradient recentré pour mobile ──────── */
+@media (max-width: 768px) {
+  .hero-bg {
+    background:
+      radial-gradient(ellipse 130% 70% at 50% 22%, rgba(91,45,142,.80) 0%, transparent 58%),
+      radial-gradient(ellipse 80% 55% at 8%  85%, rgba(240,165,0,.40) 0%, transparent 55%),
+      radial-gradient(ellipse 80% 55% at 92% 8%,  rgba(139,92,246,.50) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 50% at 50% 60%, rgba(79,70,229,.25)  0%, transparent 60%);
+  }
+  /* Orbes plus présentes sur mobile */
+  .hero-orb-1 { width: 300px; height: 300px; opacity: .55 !important; top: -5%; left: 30%; }
+  .hero-orb-2 { width: 220px; height: 220px; opacity: .40 !important; }
+}
+
+/* ── Strip de 3 vraies photos — visible ≤ 600px ──────────── */
+@media (max-width: 600px) {
+  .hero-mobile-photos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.45rem;
+    margin-top: 1.75rem;
+  }
+  .hero-mobile-photos img {
+    height: 88px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    opacity: .85;
+    border: 1px solid rgba(255,255,255,.12);
+  }
+}
+
+/* ── About section — montrer la photo sur mobile ─────────── */
+@media (max-width: 900px) {
+  .about-visual {
+    display: block !important;
+    margin-bottom: 2.5rem;
+    overflow: visible;
+  }
+  .about-img-wrap {
+    aspect-ratio: 16 / 7;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(91,45,142,.20);
+  }
+  .about-badge-float {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.85rem;
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+  }
+  .about-badge-float .big-num { font-size: 1.5rem; }
+  .about-badge-float .small-txt { font-size: 0.7rem; }
+}
+
+/* ── Stats cards plus visibles sur mobile ────────────────── */
+@media (max-width: 768px) {
+  .stat-card {
+    background: rgba(255,255,255,.14) !important;
+    border-color: rgba(255,255,255,.22) !important;
+  }
+  .stat-icon {
+    box-shadow: 0 0 28px rgba(240,165,0,.40);
+    width: 52px; height: 52px;
+  }
+  .stat-number { font-size: 2rem; }
+}
+
+/* ── Service icons — couleurs plus vives sur mobile ─────── */
+@media (max-width: 768px) {
+  .si-cyan   { background: rgba(0,180,180,.20)  !important; }
+  .si-red    { background: rgba(180,40,40,.20)  !important; }
+  .si-or     { background: rgba(240,165,0,.24)  !important; }
+  .si-marine { background: rgba(26,26,46,.16)   !important; }
+  .si-green  { background: rgba(0,150,80,.20)   !important; }
+  .si-violet { background: rgba(91,45,142,.20)  !important; }
+  .service-icon { font-size: 1.55rem; width: 56px; height: 56px; }
+  .service-card-top { padding: 1.5rem 1.5rem 0; }
+  .service-card-bottom { padding: 0 1.5rem 1.5rem; }
+}
+
+/* ── Process steps — cartes colorées sur mobile ──────────── */
+@media (max-width: 600px) {
+  .process-step {
+    background: var(--blanc);
+    border-radius: 14px;
+    border: 1.5px solid var(--gris);
+    padding: 1.1rem 1.25rem 1.1rem 5rem;
+    box-shadow: 0 2px 12px rgba(91,45,142,.07);
+    text-align: left;
+    position: relative;
+    min-height: 80px;
+  }
+  .process-num {
+    position: absolute !important;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    background: var(--violet) !important;
+    border-color: var(--violet) !important;
+    color: var(--blanc) !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 16px rgba(91,45,142,.30);
+  }
+  .process-icon { display: none; }
+  .process-step h4 { font-size: 1rem; margin-bottom: 0.3rem; text-align: left; }
+  .process-step p  { font-size: 0.83rem; margin: 0; text-align: left; }
+}
+
+/* ── Hero KPIs — lisibles et colorés sur mobile ───────────── */
+@media (max-width: 480px) {
+  .hero-kpis {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 14px;
+    padding: 0.85rem 0.5rem;
+    justify-content: space-around;
+    gap: 0;
+  }
+  .kpi-item strong {
+    color: var(--or) !important;
+    -webkit-text-fill-color: var(--or) !important;
+    text-shadow: 0 0 18px rgba(240,165,0,.35);
+  }
+  .kpi-item span { color: rgba(255,255,255,.78); font-size: .66rem; }
+  .kpi-sep { background: rgba(255,255,255,.18); }
+}
+
+/* ── Partners logos — grille 2 colonnes sur petit écran ─── */
+@media (max-width: 520px) {
+  .clients-logos {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.65rem !important;
+    justify-items: stretch;
+  }
+  .client-logo-item {
+    min-width: unset !important;
+    height: 80px !important;
+    width: 100% !important;
+  }
+  .client-logo-item img { max-height: 55px; max-width: 110px; }
+}
+
+/* ── Geo section mobile ───────────────────────────────────── */
+@media (max-width: 600px) {
+  .geo-zone { padding: 0.85rem 1rem; }
+  .geo-zone strong { font-size: 0.88rem; }
+  .geo-zone span   { font-size: 0.77rem; }
+  .geo-map { min-height: auto; padding: 1.5rem; }
+  .geo-map > i { font-size: 2.5rem; }
+}
+
+/* ── CTA banner — boutons pleine largeur mobile ──────────── */
+@media (max-width: 480px) {
+  .cta-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+  .cta-actions .btn { width: 100% !important; justify-content: center !important; }
+}
+
+/* ── Section headers — lecture confortable mobile ─────────── */
+@media (max-width: 480px) {
+  .section-header { padding: 0 0.2rem; }
+  .section-header p { font-size: 0.95rem; line-height: 1.65; }
+}
+
+/* ── Service list items — espacement touch-friendly ─────── */
+@media (max-width: 600px) {
+  .service-list li { padding: 0.5rem 0; font-size: 0.85rem; }
+}
+
+/* ── Blog cards — lisibles sur mobile ────────────────────── */
+@media (max-width: 600px) {
+  .blog-card-body { padding: 1.1rem; }
+  .blog-card-title { font-size: 1rem; }
+}
