@@ -15,7 +15,6 @@ const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || '';
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
   console.error('SUPABASE_URL et SUPABASE_SERVICE_KEY sont requis dans .env');
-  process.exit(1);
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
@@ -576,11 +575,20 @@ app.delete('/api/devis/:id', requireAuth, async (req, res) => {
 });
 
 /* ── Démarrage ────────────────────────────────────────────── */
-initAdminPassword().then(() => {
-  app.listen(port, () => {
-    console.log(`Mosaïc server → http://localhost:${port}`);
+if (require.main === module) {
+  /* Lancement local uniquement (node server.js) */
+  initAdminPassword().then(() => {
+    app.listen(port, () => {
+      console.log(`Mosaïc server → http://localhost:${port}`);
+    });
+  }).catch((err) => {
+    console.error('Erreur init :', err.message);
   });
-}).catch((err) => {
-  console.error('Erreur init :', err.message);
-  process.exit(1);
-});
+} else {
+  /* Vercel serverless — init en arrière-plan, sans bloquer */
+  initAdminPassword().catch((err) => {
+    console.error('Init admin (serverless) :', err.message);
+  });
+}
+
+module.exports = app;
