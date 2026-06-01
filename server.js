@@ -274,8 +274,8 @@ app.post('/api/upload-image', requireAuth, async (req, res) => {
 ══════════════════════════════════════════════════════════ */
 app.post('/api/contact', async (req, res) => {
   const { prenom, nom, email, tel, societe, pays, service, budget, message, sourcePage } = req.body;
-  if (!prenom || !nom || !email || !tel || !societe || !service || !message) {
-    return res.status(400).json({ error: 'Tous les champs obligatoires doivent être remplis.' });
+  if (!prenom || !nom || !email || !service || !message) {
+    return res.status(400).json({ error: 'Veuillez remplir tous les champs obligatoires.' });
   }
   const now = new Date().toISOString();
   const row = {
@@ -291,13 +291,19 @@ app.post('/api/contact', async (req, res) => {
     created_at:  now
   };
   try {
+    if (!supabase || !SUPABASE_URL) {
+      return res.status(503).json({ error: 'Base de données non configurée. Contactez-nous par email ou WhatsApp.' });
+    }
     const { error } = await supabase.from('contacts').insert(row);
-    sbCheck({ error }, 'INSERT contact');
+    if (error) {
+      console.error('INSERT contact:', error.message);
+      return res.status(500).json({ error: 'Erreur enregistrement. Contactez-nous directement par WhatsApp.' });
+    }
     await sendContactMail({ ...row, sourcePage: row.source_page });
     return res.json({ ok: true });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Impossible d'enregistrer la demande." });
+    console.error('Contact route error:', err.message);
+    return res.status(500).json({ error: 'Erreur serveur. Contactez-nous par WhatsApp au +235 62 68 68 12.' });
   }
 });
 
