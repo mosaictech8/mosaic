@@ -179,20 +179,50 @@ app.get('/api/ping', async (_req, res) => {
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   if (username !== ADMIN_USER || !password) {
-    return res.status(401).json({ error: 'Identifiants invalides' });
+    return res.status(401).json({ error: 'Identifiants incorrects. Réessayez.' });
   }
   try {
-    const { data } = await supabase
-      .from('settings').select('value')
-      .eq('key', 'admin_password').maybeSingle();
-    if (!data?.value || !comparePassword(password, data.value)) {
-      return res.status(401).json({ error: 'Identifiants invalides' });
+    let isValid = false;
+
+    if (supabase && SUPABASE_URL) {
+      const { data, error } = await supabase
+        .from('settings').select('value')
+        .eq('key', 'admin_password').maybeSingle();
+
+      if (data?.value) {
+        // Mot de passe stocké en base — comparaison bcrypt
+        isValid = comparePassword(password, data.value);
+      } else {
+        // Table vide ou inexistante — fallback sur variable d'environnement
+        isValid = (password === ADMIN_PASS);
+        if (isValid) {
+          // Initialiser le mot de passe en base en arrière-plan
+          supabase.from('settings')
+            .upsert({ key: 'admin_password', value: hashPassword(ADMIN_PASS) }, { onConflict: 'key' })
+            .then(({ error: e }) => { if (e) console.error('Init pwd:', e.message); });
+        }
+        if (error) console.error('Login Supabase error:', error.message);
+      }
+    } else {
+      // Supabase non configuré — comparaison directe
+      isValid = (password === ADMIN_PASS);
+    }
+
+    if (!isValid) {
+      return res.status(401).json({ error: 'Identifiants incorrects. Réessayez.' });
     }
     const token = signToken();
     res.cookie(COOKIE_NAME, token, COOKIE_OPTS);
     return res.json({ authenticated: true });
   } catch (err) {
-    return res.status(500).json({ error: 'Erreur serveur' });
+    console.error('Login error:', err.message);
+    // Dernier recours : comparaison directe
+    if (password === ADMIN_PASS) {
+      const token = signToken();
+      res.cookie(COOKIE_NAME, token, COOKIE_OPTS);
+      return res.json({ authenticated: true });
+    }
+    return res.status(500).json({ error: 'Erreur serveur.' });
   }
 });
 
