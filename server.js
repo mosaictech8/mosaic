@@ -173,6 +173,24 @@ app.get('/api/ping', async (_req, res) => {
   }
 });
 
+/* ── Diagnostic (sans secrets) ──────────────────────────── */
+app.get('/api/status', async (_req, res) => {
+  const info = {
+    supabase_url_set: Boolean(SUPABASE_URL),
+    supabase_key_set: Boolean(SUPABASE_SERVICE_KEY),
+    tables: {}
+  };
+  if (supabase && SUPABASE_URL) {
+    for (const table of ['contacts', 'news', 'settings', 'devis']) {
+      const { error } = await supabase.from(table).select('*').limit(1);
+      info.tables[table] = error ? `ERREUR: ${error.message}` : 'OK';
+    }
+  } else {
+    info.tables = 'Supabase non configuré';
+  }
+  return res.json(info);
+});
+
 /* ══════════════════════════════════════════════════════════
    AUTH (JWT — compatible serverless Vercel)
 ══════════════════════════════════════════════════════════ */
