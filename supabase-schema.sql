@@ -106,6 +106,23 @@ create table if not exists devis (
 
 alter table devis disable row level security;
 
+-- ── Table portfolio (projets admin) ──────────────────────────
+create table if not exists portfolio (
+  id          text primary key,
+  title       text,
+  category    text,
+  description text,
+  status      text default 'published',
+  image       text,
+  gallery     text,
+  client      text,
+  location    text,
+  date        text,
+  created_at  text
+);
+
+alter table portfolio disable row level security;
+
 -- ================================================================
 -- Fin du script. Après exécution, relancez : npm start
 -- ================================================================

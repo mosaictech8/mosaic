@@ -685,5 +685,86 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await renderHomeNews();
   await renderActualitesPage();
+  await loadPublicSettings();
+  await renderDynamicPortfolio();
 
 });
+
+/* ── Paramètres dynamiques (phone, email, adresse, horaires) ── */
+async function loadPublicSettings() {
+  try {
+    const res = await fetch('/api/public-settings');
+    if (!res.ok) return;
+    const s = await res.json();
+
+    document.querySelectorAll('[data-setting="address"]').forEach(el => {
+      el.textContent = s.address;
+    });
+    document.querySelectorAll('[data-setting="hours"]').forEach(el => {
+      el.textContent = s.hours;
+    });
+    document.querySelectorAll('[data-setting="phone"]').forEach(el => {
+      el.textContent = s.phone;
+      if (el.tagName === 'A') el.href = 'tel:' + s.phone.replace(/[\s\-().]/g, '');
+    });
+    document.querySelectorAll('[data-setting="email"]').forEach(el => {
+      el.textContent = s.email;
+      if (el.tagName === 'A') el.href = 'mailto:' + s.email;
+    });
+  } catch { /* silently keep HTML defaults */ }
+}
+
+/* ── Portfolio dynamique (projets créés depuis l'admin) ─────── */
+async function renderDynamicPortfolio() {
+  const section = document.getElementById('dynamic-portfolio-section');
+  const grid    = document.getElementById('dynamic-portfolio-grid');
+  if (!section || !grid) return;
+
+  try {
+    const res = await fetch('/api/portfolio');
+    if (!res.ok) return;
+    const projects = await res.json();
+    if (!projects.length) return;
+
+    const catLabels = {
+      telecom: 'Télécom', logistique: 'Transport & Logistique',
+      'genie-civil': 'Génie Civil', agrobusiness: 'Agrobusiness',
+      export: 'Export', medical: 'Distribution Médicale'
+    };
+
+    grid.innerHTML = projects.map((p, i) => {
+      const gallery = (() => { try { return JSON.parse(p.gallery || '[]'); } catch { return []; } })();
+      const tag = catLabels[p.category] || p.category || 'Projet';
+      return `
+        <article class="portfolio-card" data-category="${escHtml(p.category||'autre')}" data-animate data-delay="${((i % 3) + 1) * 100}">
+          <div class="portfolio-img">
+            ${p.image
+              ? `<img src="${escHtml(p.image)}" alt="${escHtml(p.title)}" class="media-cover">`
+              : `<div class="portfolio-img-placeholder"><i class="fas fa-briefcase"></i></div>`}
+            <span class="portfolio-tag">${escHtml(tag)}</span>
+          </div>
+          <div class="portfolio-body">
+            <h3>${escHtml(p.title)}</h3>
+            ${p.description ? `<p>${escHtml(p.description)}</p>` : ''}
+            ${gallery.length > 0 ? `
+            <div class="portfolio-photos-strip">
+              ${gallery.slice(0,3).map(u => `<img src="${escHtml(u)}" alt="">`).join('')}
+            </div>` : ''}
+            <div class="portfolio-meta">
+              ${p.location ? `<span><i class="fas fa-map-marker-alt"></i> ${escHtml(p.location)}</span>` : ''}
+              ${p.client   ? `<span><i class="fas fa-handshake"></i> ${escHtml(p.client)}</span>`   : ''}
+              ${p.date     ? `<span><i class="fas fa-calendar"></i> ${escHtml(p.date.slice(0,7))}</span>` : ''}
+            </div>
+          </div>
+        </article>`;
+    }).join('');
+
+    section.style.display = 'block';
+    const pfObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add('animated'); pfObs.unobserve(entry.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    grid.querySelectorAll('[data-animate]').forEach(el => pfObs.observe(el));
+  } catch { /* silently fail */ }
+}

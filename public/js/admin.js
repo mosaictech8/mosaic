@@ -126,6 +126,7 @@ async function showPanel(id) {
   if (id === 'panel-contacts') await renderContacts();
   if (id === 'panel-news') await renderNews();
   if (id === 'panel-devis') await renderDevis();
+  if (id === 'panel-portfolio') await renderPortfolio();
   if (id === 'dashboard-home') await refreshAll();
 }
 
@@ -305,9 +306,10 @@ async function saveDevisAdmin() {
 
 async function refreshAll() {
   try {
-    const [news, contacts, devisList] = await Promise.all([
+    const [news, contacts, devisList, portfolioList] = await Promise.all([
       getNews(), getContacts(),
-      api('/devis', { method: 'GET' }).catch(() => [])
+      api('/devis', { method: 'GET' }).catch(() => []),
+      api('/portfolio', { method: 'GET' }).catch(() => [])
     ]);
     const unread = contacts.filter((contact) => contact.status === 'new').length;
     const newDevis = devisList.filter(d => d.status === 'nouveau').length;
@@ -315,7 +317,7 @@ async function refreshAll() {
     document.getElementById('stat-news').textContent = news.filter((article) => article.status === 'published').length;
     document.getElementById('stat-total-contacts').textContent = contacts.length;
     document.getElementById('stat-unread').textContent = unread;
-    document.getElementById('stat-portfolio').textContent = 9;
+    document.getElementById('stat-portfolio').textContent = portfolioList.filter(p => p.status === 'published').length;
     document.getElementById('stat-devis').textContent = devisList.length;
 
     const badge = document.getElementById('unread-badge');
@@ -681,6 +683,215 @@ document.getElementById('contact-modal').addEventListener('click', (event) => {
 document.getElementById('devis-modal').addEventListener('click', (event) => {
   if (event.target === document.getElementById('devis-modal')) {
     closeDevisModal();
+  }
+});
+
+/* ══════════════════════════════════════════════════════════
+   PORTFOLIO
+══════════════════════════════════════════════════════════ */
+const PORTFOLIO_CAT = {
+  telecom:     'Télécom',
+  logistique:  'Transport & Logistique',
+  'genie-civil': 'Génie Civil',
+  agrobusiness: 'Agrobusiness',
+  export:      'Export',
+  medical:     'Distribution Médicale'
+};
+
+async function renderPortfolio() {
+  try {
+    const projects = await api('/portfolio', { method: 'GET' });
+    const published = projects.filter(p => p.status === 'published').length;
+    document.getElementById('portfolio-count').textContent = `(${projects.length})`;
+    document.getElementById('stat-portfolio').textContent = published;
+    const tbody = document.getElementById('portfolio-table-body');
+
+    if (!projects.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-briefcase"></i><p>Aucun projet créé. Cliquez sur "Nouveau projet" pour commencer.</p></div></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = projects.map(p => {
+      const catLabel = PORTFOLIO_CAT[p.category] || p.category || '—';
+      const thumb = p.image
+        ? `<img src="${escHtml(p.image)}" alt="" style="width:52px;height:38px;object-fit:cover;border-radius:6px;">`
+        : `<div style="width:52px;height:38px;background:var(--gris-clair);border-radius:6px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-image" style="color:var(--texte-clair);font-size:.8rem;"></i></div>`;
+      return `
+        <tr>
+          <td>${thumb}</td>
+          <td style="font-weight:600;max-width:220px;">${escHtml(p.title)}</td>
+          <td><span style="background:rgba(91,45,142,.08);color:var(--violet);padding:.2rem .6rem;border-radius:50px;font-size:.78rem;font-weight:700;">${escHtml(catLabel)}</span></td>
+          <td style="font-size:.82rem;color:var(--texte-clair);">${escHtml(p.client||'—')}</td>
+          <td style="font-size:.8rem;color:var(--texte-clair);">${escHtml(p.date ? p.date.slice(0,7) : '—')}</td>
+          <td>${p.status === 'published'
+            ? '<span class="status status-published"><span class="status-dot"></span>Publié</span>'
+            : '<span class="status status-draft"><span class="status-dot"></span>Brouillon</span>'}</td>
+          <td>
+            <div class="td-actions">
+              <button class="btn btn-secondary btn-sm" onclick="openPortfolioForm('${p.id}')"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-danger btn-sm" onclick="deletePortfolio('${p.id}')"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  } catch (err) {
+    console.error('Impossible de charger le portfolio :', err.message);
+  }
+}
+
+async function openPortfolioForm(id = null) {
+  const card = document.getElementById('portfolio-form-card');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior: 'smooth' });
+
+  const resetImg = () => {
+    document.getElementById('pf-image-preview').style.display = 'none';
+    document.getElementById('pf-upload-status').textContent = '';
+  };
+
+  if (id) {
+    window._editingPortfolioId = id;
+    try {
+      const projects = await api('/portfolio', { method: 'GET' });
+      const p = projects.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('portfolio-form-title').textContent = 'Modifier le projet';
+      document.getElementById('pf-title').value       = p.title       || '';
+      document.getElementById('pf-category').value    = p.category    || '';
+      document.getElementById('pf-status').value      = p.status      || 'published';
+      document.getElementById('pf-client').value      = p.client      || '';
+      document.getElementById('pf-location').value    = p.location    || '';
+      document.getElementById('pf-date').value        = p.date        || '';
+      document.getElementById('pf-image').value       = p.image       || '';
+      document.getElementById('pf-description').value = p.description || '';
+      try {
+        const gallery = p.gallery ? JSON.parse(p.gallery) : [];
+        document.getElementById('pf-gallery').value = gallery.join('\n');
+      } catch { document.getElementById('pf-gallery').value = p.gallery || ''; }
+      if (p.image) {
+        document.getElementById('pf-image-preview-img').src = p.image;
+        document.getElementById('pf-image-preview').style.display = 'block';
+      } else resetImg();
+    } catch (err) {
+      alert('Impossible de charger le projet.');
+    }
+  } else {
+    window._editingPortfolioId = null;
+    document.getElementById('portfolio-form-title').textContent = 'Nouveau projet';
+    ['title','client','location','image','description','gallery'].forEach(f => {
+      document.getElementById('pf-' + f).value = '';
+    });
+    document.getElementById('pf-category').value = '';
+    document.getElementById('pf-status').value   = 'published';
+    document.getElementById('pf-date').value     = new Date().toISOString().split('T')[0];
+    resetImg();
+  }
+}
+
+function closePortfolioForm() {
+  document.getElementById('portfolio-form-card').style.display = 'none';
+  window._editingPortfolioId = null;
+}
+
+async function savePortfolio() {
+  const title    = document.getElementById('pf-title').value.trim();
+  const category = document.getElementById('pf-category').value;
+  if (!title)    { alert('Le titre est obligatoire.'); return; }
+  if (!category) { alert('La catégorie est obligatoire.'); return; }
+
+  const galleryRaw = document.getElementById('pf-gallery').value.trim();
+  const gallery    = JSON.stringify(galleryRaw.split('\n').map(u => u.trim()).filter(Boolean));
+
+  const payload = {
+    title, category,
+    status:      document.getElementById('pf-status').value,
+    client:      document.getElementById('pf-client').value.trim(),
+    location:    document.getElementById('pf-location').value.trim(),
+    date:        document.getElementById('pf-date').value,
+    image:       document.getElementById('pf-image').value.trim(),
+    description: document.getElementById('pf-description').value.trim(),
+    gallery
+  };
+
+  try {
+    if (window._editingPortfolioId) {
+      await api(`/portfolio/${encodeURIComponent(window._editingPortfolioId)}`, { method: 'PUT', body: payload });
+    } else {
+      await api('/portfolio', { method: 'POST', body: payload });
+    }
+    closePortfolioForm();
+    await renderPortfolio();
+    await refreshAll();
+
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;top:80px;right:24px;z-index:9999;padding:.85rem 1.25rem;border-radius:10px;background:#dcfce7;color:#166534;border:1px solid #86efac;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.12);';
+    toast.innerHTML = `<i class="fas fa-check-circle"></i> Projet ${window._editingPortfolioId ? 'modifié' : 'créé'} avec succès !`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  } catch (err) {
+    alert('Erreur : ' + err.message);
+  }
+}
+
+async function deletePortfolio(id) {
+  if (!confirm('Supprimer ce projet du portfolio ?')) return;
+  try {
+    await api(`/portfolio/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    await renderPortfolio();
+    await refreshAll();
+  } catch (err) {
+    alert('Impossible de supprimer le projet.');
+  }
+}
+
+async function uploadPortfolioImage(input, targetId) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  if (file.size > 4 * 1024 * 1024) {
+    alert('Image trop lourde (max 4 Mo). Réduisez sa taille.');
+    input.value = '';
+    return;
+  }
+  const status = document.getElementById('pf-upload-status');
+  status.textContent = 'Envoi…';
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const res = await fetch('/api/upload-image', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: e.target.result })
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Erreur upload');
+      document.getElementById(targetId).value = result.url;
+      const preview = document.getElementById('pf-image-preview');
+      document.getElementById('pf-image-preview-img').src = result.url;
+      preview.style.display = 'block';
+      status.textContent = 'Image uploadée !';
+      status.style.color = 'var(--success)';
+      setTimeout(() => { status.textContent = ''; status.style.color = ''; }, 3000);
+    } catch (err) {
+      alert('Impossible d\'uploader l\'image : ' + err.message);
+      input.value = '';
+      status.textContent = '';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+/* Mise à jour de la prévisualisation quand l'URL est saisie manuellement */
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'pf-image') {
+    const url = e.target.value.trim();
+    const preview = document.getElementById('pf-image-preview');
+    if (url) {
+      document.getElementById('pf-image-preview-img').src = url;
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+    }
   }
 });
 
