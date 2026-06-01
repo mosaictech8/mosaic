@@ -177,11 +177,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   const renderHomeNews = async () => {
-    const homeGrid = document.querySelector('#actualites .blog-grid');
+    const homeGrid = document.getElementById('home-articles-grid');
+    const emptyState = document.getElementById('home-articles-empty');
     const featuredWrap = document.getElementById('featured-news-wrap');
     if (!homeGrid || featuredWrap) return;
     const news = (await getPublishedNews()).slice(0, 3);
-    if (!news.length) return;
+    if (!news.length) {
+      homeGrid.style.display = 'none';
+      if (emptyState) emptyState.style.display = 'block';
+      return;
+    }
 
     homeGrid.innerHTML = news.map((article, index) => `
       <article class="blog-card" data-animate data-delay="${(index + 1) * 100}">

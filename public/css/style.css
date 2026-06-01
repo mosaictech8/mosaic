@@ -1226,26 +1226,23 @@ p { margin-bottom: 1rem; color: var(--texte-clair); }
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 120px;
-  height: 64px;
-  padding: 0.5rem 1rem;
+  min-width: 160px;
+  height: 100px;
+  padding: 1rem 1.5rem;
   background: var(--blanc);
   border: 1px solid var(--gris);
-  border-radius: 12px;
+  border-radius: 14px;
   transition: all var(--transition);
-  filter: grayscale(1);
-  opacity: 0.7;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 .client-logo-item:hover {
-  filter: grayscale(0);
-  opacity: 1;
   border-color: var(--violet);
   box-shadow: var(--ombre);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 .client-logo-item img {
-  max-height: 44px;
-  max-width: 110px;
+  max-height: 70px;
+  max-width: 140px;
   object-fit: contain;
 }
 .client-logo-fallback {
