@@ -65,6 +65,19 @@
     </div>
   </div>
 
+  <!-- Projets publiés depuis l'admin — chargés dynamiquement -->
+  <section class="section" id="dynamic-portfolio-section" style="display:none;">
+    <div class="container">
+      <div class="section-header" data-animate>
+        <span class="badge badge-violet">Projets récents</span>
+        <h2>Nos derniers projets publiés</h2>
+        <div class="section-divider"></div>
+      </div>
+      <div class="portfolio-grid" id="dynamic-portfolio-grid"></div>
+    </div>
+  </section>
+
+  <!-- Photos terrain réelles -->
   <section class="section">
     <div class="container">
 
@@ -327,9 +340,9 @@
           </div>
           <div class="footer-col">
             <h4>Contact</h4>
-            <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>425W+W78, N'Djaména, Tchad</span></div>
-            <div class="footer-contact-item"><i class="fas fa-phone"></i><a href="tel:+23562686812">+235 62 68 68 12</a></div>
-            <div class="footer-contact-item"><i class="fas fa-envelope"></i><a href="mailto:contact@mozaikinternational.com">contact@mozaikinternational.com</a></div>
+            <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span data-setting="address">425W+W78, N'Djaména, Tchad</span></div>
+            <div class="footer-contact-item"><i class="fas fa-phone"></i><a href="tel:+23562686812" data-setting="phone">+235 62 68 68 12</a></div>
+            <div class="footer-contact-item"><i class="fas fa-envelope"></i><a href="mailto:contact@mozaikinternational.com" data-setting="email">contact@mozaikinternational.com</a></div>
           </div>
         </div>
       </div>

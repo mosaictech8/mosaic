@@ -481,6 +481,30 @@ app.delete('/api/news/:id', requireAuth, async (req, res) => {
 /* ══════════════════════════════════════════════════════════
    PARAMÈTRES
 ══════════════════════════════════════════════════════════ */
+
+/* Public — retourne les infos de contact affichées sur le site */
+app.get('/api/public-settings', async (_req, res) => {
+  const defaults = {
+    phone:   '+235 62 68 68 12',
+    email:   CONTACT_EMAIL,
+    address: "425W+W78, N'Djaména, Tchad",
+    hours:   'Lun – Sam : 07h00 – 18h00'
+  };
+  try {
+    if (!supabase || !SUPABASE_URL) return res.json(defaults);
+    const { data } = await supabase.from('settings').select('key, value');
+    const s = (data || []).reduce((acc, r) => ({ ...acc, [r.key]: r.value }), {});
+    return res.json({
+      phone:   s.site_phone   || defaults.phone,
+      email:   s.site_email   || defaults.email,
+      address: s.site_address || defaults.address,
+      hours:   s.site_hours   || defaults.hours
+    });
+  } catch {
+    return res.json(defaults);
+  }
+});
+
 app.get('/api/settings', requireAuth, async (req, res) => {
   try {
     const { data, error } = await supabase.from('settings').select('key, value');
@@ -639,6 +663,90 @@ app.delete('/api/devis/:id', requireAuth, async (req, res) => {
     return res.json({ ok: true });
   } catch (err) {
     return res.status(500).json({ error: "Impossible de supprimer le devis." });
+  }
+});
+
+/* ══════════════════════════════════════════════════════════
+   PORTFOLIO
+══════════════════════════════════════════════════════════ */
+const toPortfolio = (r) => !r ? null : {
+  id: r.id, title: r.title, category: r.category,
+  description: r.description, status: r.status,
+  image: r.image, gallery: r.gallery,
+  client: r.client, location: r.location,
+  date: r.date, createdAt: r.created_at
+};
+
+app.get('/api/portfolio', async (req, res) => {
+  try {
+    if (!supabase || !SUPABASE_URL) return res.json([]);
+    const token = req.cookies?.[COOKIE_NAME];
+    const isAdmin = Boolean(token && verifyToken(token));
+    let q = supabase.from('portfolio').select('*').order('date', { ascending: false });
+    if (!isAdmin) q = q.eq('status', 'published');
+    const { data, error } = await q;
+    sbCheck({ error }, 'GET portfolio');
+    return res.json((data || []).map(toPortfolio));
+  } catch (err) {
+    return res.status(500).json({ error: 'Impossible de charger le portfolio.' });
+  }
+});
+
+app.post('/api/portfolio', requireAuth, async (req, res) => {
+  const { title, category, description, status, image, gallery, client, location, date } = req.body;
+  if (!title || !category) return res.status(400).json({ error: 'Titre et catégorie obligatoires.' });
+  const now = new Date().toISOString();
+  const row = {
+    id: `proj_${Date.now()}`,
+    title, category,
+    description: description || '',
+    status: status || 'published',
+    image: image || '',
+    gallery: gallery || '',
+    client: client || '',
+    location: location || '',
+    date: date || now.split('T')[0],
+    created_at: now
+  };
+  try {
+    const { error } = await supabase.from('portfolio').insert(row);
+    sbCheck({ error }, 'INSERT portfolio');
+    return res.json(toPortfolio(row));
+  } catch (err) {
+    return res.status(500).json({ error: 'Impossible de créer le projet.' });
+  }
+});
+
+app.put('/api/portfolio/:id', requireAuth, async (req, res) => {
+  const { title, category, description, status, image, gallery, client, location, date } = req.body;
+  if (!title || !category) return res.status(400).json({ error: 'Titre et catégorie obligatoires.' });
+  const updates = {
+    title, category,
+    description: description || '',
+    status: status || 'published',
+    image: image || '',
+    gallery: gallery || '',
+    client: client || '',
+    location: location || '',
+    date: date || new Date().toISOString().split('T')[0]
+  };
+  try {
+    const { error } = await supabase.from('portfolio').update(updates).eq('id', req.params.id);
+    sbCheck({ error }, 'UPDATE portfolio');
+    const { data } = await supabase.from('portfolio').select('*').eq('id', req.params.id).maybeSingle();
+    return res.json(toPortfolio(data));
+  } catch (err) {
+    return res.status(500).json({ error: 'Impossible de mettre à jour le projet.' });
+  }
+});
+
+app.delete('/api/portfolio/:id', requireAuth, async (req, res) => {
+  try {
+    const { error } = await supabase.from('portfolio').delete().eq('id', req.params.id);
+    sbCheck({ error }, 'DELETE portfolio');
+    return res.json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({ error: 'Impossible de supprimer le projet.' });
   }
 });
 

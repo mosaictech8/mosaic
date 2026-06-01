@@ -885,16 +885,113 @@
 
     <!-- ── Panel : Portfolio ── -->
     <div class="panel" id="panel-portfolio">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <h3 style="font-family:'Montserrat',sans-serif;font-size:1.1rem;color:var(--marine);">Portfolio — Projets</h3>
-        <p style="font-size:0.88rem;color:var(--texte-clair);">Gérez les projets affichés dans le portfolio (fonctionnalité à venir).</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem;">
+        <div>
+          <h3 style="font-family:'Montserrat',sans-serif;font-size:1.1rem;color:var(--marine);">Portfolio — Projets</h3>
+          <p style="font-size:0.82rem;color:var(--texte-clair);margin-top:0.2rem;">Les projets publiés apparaissent en haut de la page Portfolio du site.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openPortfolioForm()">
+          <i class="fas fa-plus"></i> Nouveau projet
+        </button>
       </div>
-      <div class="card">
+
+      <!-- Formulaire création / édition -->
+      <div class="card" id="portfolio-form-card" style="display:none;margin-bottom:1.5rem;border-color:var(--violet);">
+        <div class="card-header" style="background:rgba(91,45,142,0.04);">
+          <h3 id="portfolio-form-title">Nouveau projet</h3>
+          <button class="btn btn-secondary btn-sm" onclick="closePortfolioForm()"><i class="fas fa-times"></i> Annuler</button>
+        </div>
         <div class="card-body">
-          <div class="empty-state">
-            <i class="fas fa-tools"></i>
-            <p>La gestion du portfolio sera disponible dans la prochaine version.<br>Contactez votre développeur pour ajouter des projets.</p>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Titre du projet *</label>
+              <input type="text" class="form-control" id="pf-title" placeholder="Ex : Déploiement réseau 4G — Zone nord">
+            </div>
+            <div class="form-group">
+              <label>Catégorie *</label>
+              <select class="form-control" id="pf-category">
+                <option value="">Sélectionner…</option>
+                <option value="telecom">Télécom</option>
+                <option value="logistique">Transport & Logistique</option>
+                <option value="genie-civil">Génie Civil</option>
+                <option value="agrobusiness">Agrobusiness</option>
+                <option value="export">Export</option>
+                <option value="medical">Distribution Médicale</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Statut</label>
+              <select class="form-control" id="pf-status">
+                <option value="published">Publié</option>
+                <option value="draft">Brouillon</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Client / Partenaire</label>
+              <input type="text" class="form-control" id="pf-client" placeholder="Ex : UNICEF, Moov Africa…">
+            </div>
+            <div class="form-group">
+              <label>Lieu</label>
+              <input type="text" class="form-control" id="pf-location" placeholder="Ex : N'Djaména, Tchad">
+            </div>
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" class="form-control" id="pf-date">
+            </div>
+            <div class="form-group full">
+              <label>Image principale</label>
+              <div style="display:flex;gap:.75rem;align-items:flex-start;flex-wrap:wrap;">
+                <input type="url" class="form-control" id="pf-image" placeholder="https://… (URL) ou uploadez ci-dessous" style="flex:1;min-width:200px;">
+                <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">
+                  <label class="btn btn-secondary btn-sm" style="cursor:pointer;margin:0;">
+                    <i class="fas fa-upload"></i> Uploader
+                    <input type="file" accept="image/*" id="pf-image-file" style="display:none;" onchange="uploadPortfolioImage(this,'pf-image')">
+                  </label>
+                  <span id="pf-upload-status" style="font-size:.78rem;color:var(--texte-clair);"></span>
+                </div>
+              </div>
+              <div id="pf-image-preview" style="margin-top:.5rem;display:none;">
+                <img id="pf-image-preview-img" src="" alt="" style="max-width:180px;max-height:120px;border-radius:8px;border:1px solid var(--gris);">
+              </div>
+            </div>
+            <div class="form-group full">
+              <label>Description</label>
+              <textarea class="form-control" id="pf-description" rows="3" placeholder="Décrivez le projet, les travaux réalisés, les résultats obtenus…"></textarea>
+            </div>
+            <div class="form-group full">
+              <label>Photos supplémentaires <span style="font-weight:400;text-transform:none;font-size:.78rem;color:var(--texte-clair);">(URLs, une par ligne)</span></label>
+              <textarea class="form-control" id="pf-gallery" rows="3" placeholder="https://…&#10;https://…&#10;https://…"></textarea>
+            </div>
           </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="savePortfolio()"><i class="fas fa-save"></i> Enregistrer</button>
+            <button class="btn btn-secondary" onclick="closePortfolioForm()">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Liste des projets -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Projets <span id="portfolio-count" style="color:var(--texte-clair);font-weight:400;font-size:0.85rem;">(0)</span></h3>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:60px;">Image</th>
+                <th>Titre</th>
+                <th>Catégorie</th>
+                <th>Client</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="portfolio-table-body">
+              <tr><td colspan="7"><div class="empty-state"><i class="fas fa-briefcase"></i><p>Aucun projet créé. Cliquez sur "Nouveau projet" pour commencer.</p></div></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
