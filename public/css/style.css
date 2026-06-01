@@ -3149,194 +3149,440 @@ img, video, iframe { max-width: 100%; }
   transform: translateX(100%);
 }
 
-/* ===================================================================
-   MOBILE PREMIUM — Couleurs identiques desktop, visuels riches
-   =================================================================== */
+/* ==========================================================================
+   REFONTE MOBILE COMPLÈTE — Design propre, sans flou, professionnel
+   Ciblé ≤ 768px (téléphone + petite tablette)
+   ========================================================================== */
 
-/* ── Photo strip terrain dans le hero (caché sur desktop) ── */
+/* ── 0. Photos hero terrain — cachées sur desktop ────────── */
 .hero-mobile-photos { display: none; }
 
-/* ── Hero background — gradient recentré pour mobile ──────── */
+/* ==========================================================================
+   SECTION A — Supprimer TOUS les effets de flou sur mobile
+   ========================================================================== */
 @media (max-width: 768px) {
+
+  /* Orbes : source principale du flou visuel */
+  .hero-orb,
+  .hero-beam { display: none !important; }
+
+  /* Grille de points très légère */
+  .hero::before { opacity: 0.012 !important; }
+
+  /* Navbar : fond solide, pas de blur */
+  .navbar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(8, 4, 24, 0.97) !important;
+  }
+  .navbar.scrolled { background: rgba(4, 2, 14, 0.99) !important; }
+
+  /* Dropdown glass */
+  .dropdown-menu {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* About overlay */
+  .media-overlay-label {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(15, 10, 40, 0.75) !important;
+  }
+}
+
+/* ==========================================================================
+   SECTION B — Animations : tout visible immédiatement sur mobile
+   ========================================================================== */
+@media (max-width: 768px) {
+  [data-animate],
+  [data-dir] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .word-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  /* Hero title animations CSS override */
+  .hero-title-line {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .hero-desc, .hero-cta-row { animation: none !important; }
+}
+
+/* ==========================================================================
+   SECTION C — HERO : fond vibrant, texte grand, propre
+   ========================================================================== */
+@media (max-width: 768px) {
+  .hero {
+    background: #0e0b2a !important;
+    min-height: auto !important;
+  }
   .hero-bg {
     background:
-      radial-gradient(ellipse 130% 70% at 50% 22%, rgba(91,45,142,.80) 0%, transparent 58%),
-      radial-gradient(ellipse 80% 55% at 8%  85%, rgba(240,165,0,.40) 0%, transparent 55%),
-      radial-gradient(ellipse 80% 55% at 92% 8%,  rgba(139,92,246,.50) 0%, transparent 55%),
-      radial-gradient(ellipse 60% 50% at 50% 60%, rgba(79,70,229,.25)  0%, transparent 60%);
+      radial-gradient(ellipse 150% 70% at 50% 0%,   rgba(91,45,142,.90) 0%, transparent 62%),
+      radial-gradient(ellipse 80%  45% at 2%  100%,  rgba(240,165,0,.28)  0%, transparent 55%),
+      radial-gradient(ellipse 80%  45% at 98% 90%,   rgba(139,92,246,.38) 0%, transparent 55%) !important;
+    animation: none !important;
   }
-  /* Orbes plus présentes sur mobile */
-  .hero-orb-1 { width: 300px; height: 300px; opacity: .55 !important; top: -5%; left: 30%; }
-  .hero-orb-2 { width: 220px; height: 220px; opacity: .40 !important; }
+  .hero-layout {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+    padding-top: 5.5rem !important;
+    padding-bottom: 2.5rem !important;
+    gap: 0 !important;
+  }
+  .hero-visual-new { display: none !important; }
+  .hero-eyebrow { justify-content: center !important; }
+  .hero-title {
+    font-size: clamp(1.95rem, 8vw, 2.75rem) !important;
+    margin-bottom: 1.1rem !important;
+    gap: .1em !important;
+  }
+  .hero-em { font-size: .75em !important; }
+  .hero-desc {
+    font-size: .94rem !important;
+    max-width: 100% !important;
+    margin-bottom: 1.6rem !important;
+    line-height: 1.7 !important;
+  }
+  .hero-cta-row {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    margin-bottom: 1.75rem !important;
+  }
+  .btn-hero, .btn-ghost {
+    width: 100% !important;
+    max-width: 320px !important;
+    justify-content: center !important;
+  }
 }
 
-/* ── Strip de 3 vraies photos — visible ≤ 600px ──────────── */
+/* ── Hero KPIs — grille 2×2 colorée ──────────────────────── */
+@media (max-width: 768px) {
+  .hero-kpis {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.55rem !important;
+    border: none !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+  .kpi-sep { display: none !important; }
+  .kpi-item {
+    background: rgba(255,255,255,.09) !important;
+    border: 1px solid rgba(255,255,255,.15) !important;
+    border-radius: 12px !important;
+    padding: 0.85rem 0.5rem !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.2rem !important;
+  }
+  .kpi-item:first-child { padding-left: .5rem !important; }
+  .kpi-item strong {
+    font-size: 1.65rem !important;
+    color: var(--or) !important;
+    -webkit-text-fill-color: var(--or) !important;
+    line-height: 1 !important;
+  }
+  .kpi-item span {
+    font-size: .65rem !important;
+    color: rgba(255,255,255,.82) !important;
+    text-transform: uppercase !important;
+    letter-spacing: .05em !important;
+    line-height: 1.3 !important;
+  }
+}
+
+/* ── Strip 3 photos réelles (≤ 600px) ────────────────────── */
 @media (max-width: 600px) {
   .hero-mobile-photos {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.45rem;
-    margin-top: 1.75rem;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.4rem !important;
+    margin-top: 1.5rem !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
   }
   .hero-mobile-photos img {
-    height: 88px;
-    width: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-    opacity: .85;
-    border: 1px solid rgba(255,255,255,.12);
+    height: 82px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    border-radius: 10px !important;
+    opacity: .88 !important;
   }
 }
 
-/* ── About section — montrer la photo sur mobile ─────────── */
+/* ==========================================================================
+   SECTION D — À PROPOS : photo visible + texte
+   ========================================================================== */
 @media (max-width: 900px) {
+  .about-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
   .about-visual {
     display: block !important;
-    margin-bottom: 2.5rem;
-    overflow: visible;
+    position: relative !important;
+    overflow: visible !important;
   }
   .about-img-wrap {
-    aspect-ratio: 16 / 7;
-    border-radius: 14px;
-    box-shadow: 0 8px 32px rgba(91,45,142,.20);
+    aspect-ratio: 16 / 6 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 10px 36px rgba(91,45,142,.22) !important;
   }
   .about-badge-float {
-    position: static;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-top: 0.85rem;
-    border-radius: 12px;
-    padding: 0.75rem 1.25rem;
+    position: static !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: .7rem !important;
+    margin-top: .75rem !important;
+    border-radius: 12px !important;
+    padding: .65rem 1.1rem !important;
+    box-shadow: none !important;
   }
-  .about-badge-float .big-num { font-size: 1.5rem; }
-  .about-badge-float .small-txt { font-size: 0.7rem; }
+  .about-badge-float .big-num { font-size: 1.45rem !important; }
+  .about-badge-float .small-txt { font-size: .68rem !important; }
 }
 
-/* ── Stats cards plus visibles sur mobile ────────────────── */
+/* ==========================================================================
+   SECTION E — STATS : cartes bien visibles
+   ========================================================================== */
 @media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.8rem !important;
+  }
   .stat-card {
-    background: rgba(255,255,255,.14) !important;
-    border-color: rgba(255,255,255,.22) !important;
+    background: rgba(255,255,255,.16) !important;
+    border: 1.5px solid rgba(255,255,255,.26) !important;
+    padding: 1.35rem .9rem !important;
+    border-radius: 16px !important;
   }
   .stat-icon {
-    box-shadow: 0 0 28px rgba(240,165,0,.40);
-    width: 52px; height: 52px;
+    width: 46px !important; height: 46px !important;
+    font-size: 1.1rem !important;
+    margin-bottom: .65rem !important;
+    box-shadow: 0 0 20px rgba(240,165,0,.40) !important;
   }
-  .stat-number { font-size: 2rem; }
+  .stat-number { font-size: 1.85rem !important; margin-bottom: .3rem !important; }
+  .stat-label  { font-size: .7rem !important; letter-spacing: .07em !important; }
 }
 
-/* ── Service icons — couleurs plus vives sur mobile ─────── */
+/* ==========================================================================
+   SECTION F — SERVICES : cartes compactes, icônes colorées
+   ========================================================================== */
 @media (max-width: 768px) {
-  .si-cyan   { background: rgba(0,180,180,.20)  !important; }
-  .si-red    { background: rgba(180,40,40,.20)  !important; }
-  .si-or     { background: rgba(240,165,0,.24)  !important; }
-  .si-marine { background: rgba(26,26,46,.16)   !important; }
-  .si-green  { background: rgba(0,150,80,.20)   !important; }
-  .si-violet { background: rgba(91,45,142,.20)  !important; }
-  .service-icon { font-size: 1.55rem; width: 56px; height: 56px; }
-  .service-card-top { padding: 1.5rem 1.5rem 0; }
-  .service-card-bottom { padding: 0 1.5rem 1.5rem; }
+  .services-grid {
+    grid-template-columns: 1fr !important;
+    gap: .9rem !important;
+  }
+  .service-card {
+    border-radius: 16px !important;
+    border: 1.5px solid var(--gris) !important;
+    display: grid !important;
+    grid-template-rows: auto 1fr !important;
+  }
+  .service-card-top {
+    padding: 1.25rem 1.25rem 0 !important;
+    display: grid !important;
+    grid-template-columns: 52px 1fr !important;
+    gap: .9rem !important;
+    align-items: start !important;
+  }
+  .service-card-top h3 {
+    font-size: 1rem !important;
+    margin-bottom: .3rem !important;
+    margin-top: .1rem !important;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+  .service-card-top p {
+    font-size: .82rem !important;
+    margin: 0 !important;
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+  }
+  .service-icon {
+    width: 52px !important; height: 52px !important;
+    min-width: 52px !important;
+    font-size: 1.35rem !important;
+    border-radius: 14px !important;
+    grid-column: 1 !important;
+    grid-row: 1 / 3 !important;
+    align-self: center !important;
+  }
+  .service-card-bottom { padding: .25rem 1.25rem 1.25rem !important; }
+  .service-list { margin: .6rem 0 .85rem !important; }
+  .service-list li { font-size: .82rem !important; padding: .38rem 0 !important; }
+  .service-list li:last-child { border-bottom: none !important; }
+  /* Icônes couleurs vives */
+  .si-cyan   { background: rgba(0,180,180,.22)  !important; color: #008888 !important; }
+  .si-red    { background: rgba(180,40,40,.22)  !important; color: #9e2020 !important; }
+  .si-or     { background: rgba(240,165,0,.26)  !important; color: #b87800 !important; }
+  .si-marine { background: rgba(26,26,46,.18)   !important; color: #1a1a2e !important; }
+  .si-green  { background: rgba(0,150,80,.22)   !important; color: #005533 !important; }
+  .si-violet { background: rgba(91,45,142,.22)  !important; color: var(--violet) !important; }
 }
 
-/* ── Process steps — cartes colorées sur mobile ──────────── */
+/* ==========================================================================
+   SECTION G — PROCESSUS : étapes numérotées colorées
+   ========================================================================== */
 @media (max-width: 600px) {
+  .process-grid {
+    grid-template-columns: 1fr !important;
+    gap: .7rem !important;
+  }
+  .process-grid::before { display: none !important; }
   .process-step {
-    background: var(--blanc);
-    border-radius: 14px;
-    border: 1.5px solid var(--gris);
-    padding: 1.1rem 1.25rem 1.1rem 5rem;
-    box-shadow: 0 2px 12px rgba(91,45,142,.07);
-    text-align: left;
-    position: relative;
-    min-height: 80px;
+    background: var(--blanc) !important;
+    border-radius: 14px !important;
+    border: 1.5px solid var(--gris) !important;
+    padding: 1rem 1.2rem 1rem 4.6rem !important;
+    text-align: left !important;
+    position: relative !important;
+    min-height: 72px !important;
+    box-shadow: 0 2px 14px rgba(91,45,142,.07) !important;
   }
   .process-num {
     position: absolute !important;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    margin: 0;
+    left: .9rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    width: 42px !important; height: 42px !important;
     background: var(--violet) !important;
     border-color: var(--violet) !important;
     color: var(--blanc) !important;
-    width: 44px !important;
-    height: 44px !important;
-    font-size: 0.9rem;
-    box-shadow: 0 4px 16px rgba(91,45,142,.30);
+    font-size: .88rem !important;
+    box-shadow: 0 4px 16px rgba(91,45,142,.35) !important;
   }
-  .process-icon { display: none; }
-  .process-step h4 { font-size: 1rem; margin-bottom: 0.3rem; text-align: left; }
-  .process-step p  { font-size: 0.83rem; margin: 0; text-align: left; }
+  .process-icon { display: none !important; }
+  .process-step h4 { font-size: .96rem !important; margin-bottom: .25rem !important; text-align: left !important; color: var(--marine) !important; }
+  .process-step p  { font-size: .82rem !important; margin: 0 !important; text-align: left !important; }
 }
 
-/* ── Hero KPIs — lisibles et colorés sur mobile ───────────── */
-@media (max-width: 480px) {
-  .hero-kpis {
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.14);
-    border-radius: 14px;
-    padding: 0.85rem 0.5rem;
-    justify-content: space-around;
-    gap: 0;
-  }
-  .kpi-item strong {
-    color: var(--or) !important;
-    -webkit-text-fill-color: var(--or) !important;
-    text-shadow: 0 0 18px rgba(240,165,0,.35);
-  }
-  .kpi-item span { color: rgba(255,255,255,.78); font-size: .66rem; }
-  .kpi-sep { background: rgba(255,255,255,.18); }
+/* ==========================================================================
+   SECTION H — ZONE GÉOGRAPHIQUE
+   ========================================================================== */
+@media (max-width: 768px) {
+  .geo-grid { grid-template-columns: 1fr !important; gap: 1.75rem !important; }
+  .geo-zone { padding: .8rem 1rem !important; }
+  .geo-zone strong { font-size: .88rem !important; }
+  .geo-zone span   { font-size: .78rem !important; }
+  .geo-map { min-height: auto !important; padding: 1.5rem 1.1rem !important; border-radius: 14px !important; }
+  .geo-map > i { font-size: 2.2rem !important; opacity: .5 !important; }
+  .geo-map h3  { font-size: .98rem !important; }
+  .pin { font-size: .76rem !important; padding: .3rem .7rem !important; }
 }
 
-/* ── Partners logos — grille 2 colonnes sur petit écran ─── */
+/* ==========================================================================
+   SECTION I — PARTENAIRES : grille 2 colonnes
+   ========================================================================== */
 @media (max-width: 520px) {
   .clients-logos {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.65rem !important;
-    justify-items: stretch;
+    gap: .65rem !important;
+    justify-items: stretch !important;
+    margin-top: 2rem !important;
+    padding-top: 2rem !important;
   }
   .client-logo-item {
     min-width: unset !important;
     height: 80px !important;
     width: 100% !important;
+    border-radius: 12px !important;
   }
-  .client-logo-item img { max-height: 55px; max-width: 110px; }
+  .client-logo-item img { max-height: 54px !important; max-width: 110px !important; }
 }
 
-/* ── Geo section mobile ───────────────────────────────────── */
+/* ==========================================================================
+   SECTION J — CTA BANNER
+   ========================================================================== */
 @media (max-width: 600px) {
-  .geo-zone { padding: 0.85rem 1rem; }
-  .geo-zone strong { font-size: 0.88rem; }
-  .geo-zone span   { font-size: 0.77rem; }
-  .geo-map { min-height: auto; padding: 1.5rem; }
-  .geo-map > i { font-size: 2.5rem; }
-}
-
-/* ── CTA banner — boutons pleine largeur mobile ──────────── */
-@media (max-width: 480px) {
+  .cta-banner { padding: 2.75rem 1.25rem !important; }
+  .cta-banner h2 { font-size: clamp(1.3rem, 5.5vw, 1.65rem) !important; margin-bottom: .75rem !important; }
+  .cta-banner p  { font-size: .9rem !important; }
   .cta-actions {
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 0.75rem !important;
+    gap: .65rem !important;
+    margin-top: 1.4rem !important;
   }
   .cta-actions .btn { width: 100% !important; justify-content: center !important; }
 }
 
-/* ── Section headers — lecture confortable mobile ─────────── */
+/* ==========================================================================
+   SECTION K — FORMULAIRE CONTACT
+   ========================================================================== */
+@media (max-width: 768px) {
+  .contact-grid { grid-template-columns: 1fr !important; gap: 1.75rem !important; }
+  .form-row { grid-template-columns: 1fr !important; }
+  .contact-form-wrap { padding: 1.5rem !important; border-radius: 16px !important; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea { font-size: 16px !important; padding: .75rem 1rem !important; }
+  .contact-item { padding: .85rem 1rem !important; }
+}
+
+/* ==========================================================================
+   SECTION L — FOOTER
+   ========================================================================== */
+@media (max-width: 600px) {
+  .footer-grid { grid-template-columns: 1fr !important; gap: 1.6rem !important; }
+  .footer-col h4 { font-size: .88rem !important; margin-bottom: .75rem !important; }
+  .footer-col ul li a { font-size: .83rem !important; }
+  .footer-bottom { flex-direction: column !important; text-align: center !important; gap: .35rem !important; font-size: .78rem !important; }
+  .footer-contact-item { font-size: .83rem !important; }
+}
+
+/* ==========================================================================
+   SECTION M — TYPOGRAPHIE GÉNÉRALE MOBILE
+   ========================================================================== */
 @media (max-width: 480px) {
-  .section-header { padding: 0 0.2rem; }
-  .section-header p { font-size: 0.95rem; line-height: 1.65; }
+  h2 { font-size: clamp(1.4rem, 5.5vw, 1.85rem) !important; line-height: 1.25 !important; }
+  h3 { font-size: clamp(1rem, 4.5vw, 1.2rem) !important; }
+  .section { padding: 2.75rem 0 !important; }
+  .container { padding: 0 1rem !important; }
+  .section-header { margin-bottom: 2rem !important; }
+  .section-header p { font-size: .92rem !important; line-height: 1.65 !important; }
+  .badge { font-size: .68rem !important; padding: .3rem .85rem !important; }
+  .lead { font-size: 1rem !important; }
+  .btn { min-height: 46px !important; font-size: .88rem !important; }
 }
 
-/* ── Service list items — espacement touch-friendly ─────── */
+/* ==========================================================================
+   SECTION N — BLOG / ACTUALITÉS MOBILE
+   ========================================================================== */
 @media (max-width: 600px) {
-  .service-list li { padding: 0.5rem 0; font-size: 0.85rem; }
+  .blog-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+}
+@media (max-width: 768px) {
+  .blog-card-body { padding: 1.1rem !important; }
+  .blog-card h3   { font-size: .98rem !important; }
 }
 
-/* ── Blog cards — lisibles sur mobile ────────────────────── */
+/* ==========================================================================
+   SECTION O — PORTFOLIO MOBILE
+   ========================================================================== */
 @media (max-width: 600px) {
-  .blog-card-body { padding: 1.1rem; }
-  .blog-card-title { font-size: 1rem; }
+  .portfolio-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+  .portfolio-photos-strip img { height: 70px !important; }
+  .portfolio-filters { gap: .4rem !important; }
+  .filter-btn { padding: .38rem .85rem !important; font-size: .75rem !important; }
 }
+
+/* ── Empêcher tout débordement horizontal ─────────────────── */
+@media (max-width: 768px) {
+  html, body { overflow-x: hidden !important; max-width: 100vw !important; }
+  * { box-sizing: border-box !important; }
+  img { max-width: 100% !important; }
+}
+
