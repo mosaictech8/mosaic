@@ -1793,6 +1793,25 @@ footer {
 .portfolio-meta span { display: flex; align-items: center; gap: 0.3rem; }
 .portfolio-meta i { color: var(--or); }
 
+.portfolio-photos-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.portfolio-photos-strip img {
+  border-radius: 8px;
+  height: 80px;
+  width: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.portfolio-photos-strip img:hover {
+  transform: scale(1.04);
+  opacity: 0.9;
+}
+
 @media (max-width: 900px) {
   .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
 }
