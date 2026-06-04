@@ -107,6 +107,27 @@ async function showDashboard() {
   }
 }
 
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.toggle('mobile-open');
+  overlay.classList.toggle('show');
+}
+
+function closeSidebarMobile() {
+  if (window.innerWidth <= 768) {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.remove('mobile-open');
+    overlay.classList.remove('show');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('sidebar-overlay');
+  if (overlay) overlay.addEventListener('click', closeSidebarMobile);
+});
+
 async function showPanel(id) {
   document.querySelectorAll('.panel').forEach((panel) => panel.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -122,6 +143,8 @@ async function showPanel(id) {
     'panel-settings': 'Paramètres'
   };
   document.getElementById('panel-title').textContent = titles[id] || '';
+
+  closeSidebarMobile();
 
   if (id === 'panel-contacts') await renderContacts();
   if (id === 'panel-news') await renderNews();
