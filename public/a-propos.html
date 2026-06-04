@@ -17,7 +17,7 @@
     .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
     .team-card { background: var(--blanc); border-radius: 12px; overflow: hidden; border: 1px solid var(--gris); text-align: center; transition: all var(--transition); }
     .team-card:hover { box-shadow: var(--ombre-forte); transform: translateY(-4px); }
-    .team-avatar { height: 220px; position: relative; overflow: hidden; }
+    .team-avatar { height: 200px; position: relative; overflow: hidden; }
     .team-avatar img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
     .team-card:hover .team-avatar img { transform: scale(1.06); }
     .team-avatar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,26,46,0.72), rgba(26,26,46,0.08)); }
@@ -32,7 +32,7 @@
       .timeline-item:nth-child(odd) .timeline-content:last-child { display: none; }
       .timeline-item:nth-child(even) .timeline-content:first-child { display: block; }
       .timeline-dot { margin: 0; }
-      .team-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 600px) { .team-grid { grid-template-columns: 1fr; } }
   </style>
@@ -99,14 +99,19 @@
           <span class="badge badge-violet">Notre histoire</span>
           <h2>Née au Tchad, pensée pour l'Afrique</h2>
           <p class="lead">
-            Fondée en 2013 à N'Djaména, Mosaïc International est le fruit de la vision d'entrepreneurs tchadiens déterminés à créer une entreprise de service de classe mondiale, ancrée dans les réalités locales.
+            Fondée en 2013 à N'Djaména, Mosaïc International SARL est une entreprise tchadienne multidomaines opérant au Tchad et au Cameroun, avec un capital social de <strong>XAF 5 000 000</strong>.
           </p>
           <p>
-            En 13 ans, l'entreprise s'est imposée comme un partenaire incontournable des organisations internationales (UNICEF, PNUD, PAM, UNHCR, IOM, World Vision) et des acteurs privés majeurs (Moov Africa, Camusat). Notre modèle repose sur des activités réelles et ciblées : télécommunications, agrobusiness, vivres, export de gomme arabique et spiruline, distribution médicale, forages, génie civil et logistique pétrolière.
+            En 13 ans d'activité, l'entreprise s'est imposée comme partenaire agréé de plus de 7 agences des Nations Unies — UNICEF, PAM, UNFPA, UNHCR, OMS, UNESCO, OIM — ainsi que d'organisations comme World Vision et Carter Center. Notre flotte diverse (camions-citernes, camions, véhicules 4x4, bus) couvre l'ensemble du territoire tchadien et opère sur le corridor Douala–N'Djaména.
           </p>
           <p>
-            Notre nom reflète notre identité : comme une mosaïque, nous assemblons des expertises complémentaires — logistique, télécom, génie civil, agrobusiness — pour offrir à nos clients une vision d'ensemble et des solutions globales.
+            Notre nom reflète notre identité : comme une mosaïque, nous assemblons des expertises complémentaires — logistique, transport, BTP, forage, hydrocarbures, approvisionnement — pour offrir à nos clients une vision d'ensemble et des solutions globales.
           </p>
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1.25rem;">
+            <span style="background:var(--gris-clair); border:1px solid var(--gris); border-radius:8px; padding:0.4rem 0.9rem; font-size:0.8rem; color:var(--texte-clair);"><strong style="color:var(--marine);">RC :</strong> TD-NDJ-01-2018-B13-00370</span>
+            <span style="background:var(--gris-clair); border:1px solid var(--gris); border-radius:8px; padding:0.4rem 0.9rem; font-size:0.8rem; color:var(--texte-clair);"><strong style="color:var(--marine);">NIF :</strong> 9031683 H</span>
+            <span style="background:var(--gris-clair); border:1px solid var(--gris); border-radius:8px; padding:0.4rem 0.9rem; font-size:0.8rem; color:var(--texte-clair);"><strong style="color:var(--marine);">UNGM :</strong> N° 502052</span>
+          </div>
         </div>
         <div data-animate data-delay="200" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
           <div style="background: linear-gradient(135deg, var(--violet), var(--violet-dark)); border-radius: 12px; padding: 2rem; color: var(--blanc); text-align: center;">
@@ -141,23 +146,23 @@
       <div class="stats-grid">
         <div class="stat-card" data-animate data-delay="100">
           <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-          <div class="stat-number" data-target="13" data-suffix="+">0+</div>
+          <div class="stat-number" data-target="13">0</div>
           <div class="stat-label">Années d'expérience</div>
         </div>
         <div class="stat-card" data-animate data-delay="200">
           <div class="stat-icon"><i class="fas fa-users"></i></div>
-          <div class="stat-number" data-target="500" data-suffix="+">0+</div>
-          <div class="stat-label">Clients accompagnés</div>
+          <div class="stat-number" data-target="38">0</div>
+          <div class="stat-label">Collaborateurs</div>
         </div>
         <div class="stat-card" data-animate data-delay="300">
-          <div class="stat-icon"><i class="fas fa-globe-africa"></i></div>
-          <div class="stat-number" data-target="6">0</div>
-          <div class="stat-label">Pays couverts</div>
+          <div class="stat-icon"><i class="fas fa-building"></i></div>
+          <div class="stat-number" data-target="7" data-suffix="+">0+</div>
+          <div class="stat-label">Agences ONU clientes</div>
         </div>
         <div class="stat-card" data-animate data-delay="400">
-          <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
-          <div class="stat-number" data-target="200" data-suffix="+">0+</div>
-          <div class="stat-label">Projets réalisés</div>
+          <div class="stat-icon"><i class="fas fa-globe-africa"></i></div>
+          <div class="stat-number" data-target="2">0</div>
+          <div class="stat-label">Pays d'opération</div>
         </div>
       </div>
     </div>
@@ -310,37 +315,150 @@
       <div class="team-grid" data-animate>
         <div class="team-card">
           <div class="team-avatar">
-            <img src="images/team/pdg-mosaic.png" alt="Bechir Youssouf — Président Directeur Général de Mosaïc International">
-            <span class="team-badge"><i class="fas fa-star"></i> PDG</span>
+            <img src="images/team/pdg-mosaic.png" alt="Bechir Ben Youssouf — Managing Director">
+            <span class="team-badge"><i class="fas fa-star"></i> Direction</span>
           </div>
           <div class="team-card-body">
-            <h4>Bechir Youssouf</h4>
-            <div class="role">Président Directeur Général</div>
-            <p>Fondateur et PDG de Mosaïc International depuis 2013, Bechir Youssouf pilote la vision stratégique et le développement de l'entreprise au Tchad et dans la région CEMAC depuis plus de 13 ans.</p>
+            <h4>Bechir Ben Youssouf</h4>
+            <div class="role">Managing Director</div>
+            <p>Fondateur de Mosaïc International, il pilote la stratégie et le développement depuis 2013 avec 27 ans d'expérience globale.</p>
           </div>
         </div>
         <div class="team-card">
-          <div class="team-avatar">
-            <img src="images/operations/techniciens-terrain-1.png" alt="Direction des operations Mosaic International">
-            <span class="team-badge"><i class="fas fa-gears"></i> Opérations</span>
+          <div class="team-avatar" style="background: linear-gradient(135deg, var(--marine), #2a2a55); display:flex; align-items:center; justify-content:center;">
+            <div style="width:80px;height:80px;background:var(--violet);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.6rem;color:var(--blanc);">HY</div>
+            <span class="team-badge"><i class="fas fa-gears"></i> Technique</span>
           </div>
           <div class="team-card-body">
-            <h4>Direction des Opérations</h4>
-            <div class="role">Directrice des Opérations</div>
-            <p>Supervision de l'ensemble des opérations logistiques et coordination des équipes terrain.</p>
+            <h4>Hissein Youssouf</h4>
+            <div class="role">Directeur Technique</div>
+            <p>Supervise toutes les opérations techniques avec 27 ans d'expérience globale et 7 ans au sein de Mosaïc International.</p>
           </div>
         </div>
         <div class="team-card">
-          <div class="team-avatar">
-            <img src="images/operations/logistique-petroliere-3.png" alt="Pole transit et douane Mosaic International">
-            <span class="team-badge"><i class="fas fa-file-lines"></i> Transit</span>
+          <div class="team-avatar" style="background: linear-gradient(135deg, #1a6b3a, #0d3d20); display:flex; align-items:center; justify-content:center;">
+            <div style="width:80px;height:80px;background:var(--or);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.6rem;color:var(--marine);">OM</div>
+            <span class="team-badge"><i class="fas fa-truck"></i> Logistique</span>
           </div>
           <div class="team-card-body">
-            <h4>Pôle Transit & Douane</h4>
-            <div class="role">Responsable Transit</div>
-            <p>Expert en procédures douanières tchadiennes et CEMAC, coordination des formalités d'import/export.</p>
+            <h4>Ouya Mbogo Mah</h4>
+            <div class="role">Logistics & Supply</div>
+            <p>Coordonne la chaîne d'approvisionnement et les opérations logistiques avec 13 ans d'expérience, dont 10 ans sur poste.</p>
           </div>
         </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background: linear-gradient(135deg, #1e3a5f, #0a2540); display:flex; align-items:center; justify-content:center;">
+            <div style="width:80px;height:80px;background:var(--violet);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.6rem;color:var(--blanc);">SH</div>
+            <span class="team-badge"><i class="fas fa-calculator"></i> Finance</span>
+          </div>
+          <div class="team-card-body">
+            <h4>Saleh Haroun Sou N'Garo</h4>
+            <div class="role">Comptable</div>
+            <p>Gestion financière et comptabilité générale de l'entreprise, 13 ans d'expérience globale.</p>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background: linear-gradient(135deg, #3d1e62, #1a0a3a); display:flex; align-items:center; justify-content:center;">
+            <div style="width:80px;height:80px;background:var(--or);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.6rem;color:var(--marine);">BA</div>
+            <span class="team-badge"><i class="fas fa-box"></i> Logistique</span>
+          </div>
+          <div class="team-card-body">
+            <h4>Brahim Ahmat Mahamt</h4>
+            <div class="role">Assistant Logistique</div>
+            <p>Support opérationnel sur les activités terrain et gestion des flux logistiques, 5 ans d'expérience.</p>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background: linear-gradient(135deg, #0d3d20, #061f10); display:flex; align-items:center; justify-content:center;">
+            <div style="width:80px;height:80px;background:var(--violet);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.6rem;color:var(--blanc);">AA</div>
+            <span class="team-badge"><i class="fas fa-boxes"></i> Approvisionnement</span>
+          </div>
+          <div class="team-card-body">
+            <h4>Abbas Adam Abbas</h4>
+            <div class="role">Service Approvisionnement</div>
+            <p>Gestion des achats et de l'approvisionnement pour les projets clients, 3 ans d'expérience.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RÉFÉRENCES TECHNIQUES -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header" data-animate>
+        <span class="badge badge-violet">Nos références</span>
+        <h2>Références techniques clients</h2>
+        <div class="section-divider"></div>
+        <p>Mosaïc International a exécuté des prestations pour les organisations suivantes au Tchad et dans la région.</p>
+      </div>
+      <div data-animate style="overflow-x: auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.9rem; background:var(--blanc); border-radius:12px; overflow:hidden; border:1px solid var(--gris);">
+          <thead>
+            <tr style="background:var(--marine); color:var(--blanc);">
+              <th style="padding:1rem 1.25rem; text-align:left; font-family:'Montserrat',sans-serif; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em;">Client</th>
+              <th style="padding:1rem 1.25rem; text-align:left; font-family:'Montserrat',sans-serif; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em;">Nature de prestation</th>
+              <th style="padding:1rem 1.25rem; text-align:left; font-family:'Montserrat',sans-serif; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em;">Période</th>
+              <th style="padding:1rem 1.25rem; text-align:left; font-family:'Montserrat',sans-serif; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em;">Zone</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--gris);">
+              <td style="padding:0.9rem 1.25rem; font-weight:700; color:var(--marine);">UNICEF Tchad</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte);">Location camions, 4x4, Bus</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">2019 – 2025</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">Tout le Tchad</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--gris); background:var(--gris-clair);">
+              <td style="padding:0.9rem 1.25rem; font-weight:700; color:var(--marine);">PAM Tchad</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte);">Location camions</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">2018 – 2021</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">Tout le Tchad</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--gris);">
+              <td style="padding:0.9rem 1.25rem; font-weight:700; color:var(--marine);">OMS Tchad</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte);">Location véhicules 4x4</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">2025</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">Tout le Tchad</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--gris); background:var(--gris-clair);">
+              <td style="padding:0.9rem 1.25rem; font-weight:700; color:var(--marine);">UNFPA Tchad</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte);">Location camions, 4x4, Bus</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">2017 – 2021</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">Tout le Tchad</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--gris);">
+              <td style="padding:0.9rem 1.25rem; font-weight:700; color:var(--marine);">World Vision</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte);">Location camions & fournitures</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">2018 – 2019</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">Tout le Tchad</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--gris); background:var(--gris-clair);">
+              <td style="padding:0.9rem 1.25rem; font-weight:700; color:var(--marine);">Centre Carter</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte);">Transit & dédouanement</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">2018</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">N'Djaména</td>
+            </tr>
+            <tr>
+              <td style="padding:0.9rem 1.25rem; font-weight:700; color:var(--marine);">UNESCO Tchad</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte);">Location véhicules 4x4</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">2025</td>
+              <td style="padding:0.9rem 1.25rem; color:var(--texte-clair);">Tout le Tchad</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Clients logos -->
+      <div data-animate style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; margin-top:2.5rem; align-items:center;">
+        <div style="background:var(--blanc); border:1px solid var(--gris); border-radius:10px; padding:0.75rem 1.5rem; font-weight:700; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:var(--marine);">UNICEF</div>
+        <div style="background:var(--blanc); border:1px solid var(--gris); border-radius:10px; padding:0.75rem 1.5rem; font-weight:700; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:var(--marine);">PAM</div>
+        <div style="background:var(--blanc); border:1px solid var(--gris); border-radius:10px; padding:0.75rem 1.5rem; font-weight:700; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:var(--marine);">UNFPA</div>
+        <div style="background:var(--blanc); border:1px solid var(--gris); border-radius:10px; padding:0.75rem 1.5rem; font-weight:700; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:var(--marine);">UNHCR</div>
+        <div style="background:var(--blanc); border:1px solid var(--gris); border-radius:10px; padding:0.75rem 1.5rem; font-weight:700; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:var(--marine);">OMS</div>
+        <div style="background:var(--blanc); border:1px solid var(--gris); border-radius:10px; padding:0.75rem 1.5rem; font-weight:700; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:var(--marine);">UNESCO</div>
+        <div style="background:var(--blanc); border:1px solid var(--gris); border-radius:10px; padding:0.75rem 1.5rem; font-weight:700; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:var(--marine);">OIM</div>
+        <div style="background:var(--blanc); border:1px solid var(--gris); border-radius:10px; padding:0.75rem 1.5rem; font-weight:700; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:var(--marine);">World Vision</div>
+        <div style="background:var(--blanc); border:1px solid var(--gris); border-radius:10px; padding:0.75rem 1.5rem; font-weight:700; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:var(--marine);">Carter Center</div>
       </div>
     </div>
   </section>

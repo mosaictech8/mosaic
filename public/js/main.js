@@ -122,9 +122,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         .article-modal-body { padding: 2rem; }
         .article-modal-body h2 { margin-bottom: 1rem; }
         .article-modal-body .blog-meta { margin-bottom: 1rem; }
-        .article-content { line-height: 1.8; color: var(--texte); }
+        .article-content { line-height: 1.8; color: var(--texte); word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
         .article-content p, .article-content ul, .article-content ol { margin-bottom: 1rem; }
         .article-content h3 { margin: 1.25rem 0 0.75rem; }
+        .article-content img { max-width: 100%; height: auto; }
+        .article-content pre, .article-content code { white-space: pre-wrap; word-break: break-all; max-width: 100%; }
+        .article-content table { max-width: 100%; overflow-x: auto; display: block; }
+        .article-modal { overflow-x: hidden; }
       `;
       document.head.appendChild(style);
     }
