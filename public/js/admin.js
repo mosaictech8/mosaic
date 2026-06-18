@@ -102,6 +102,15 @@ async function showDashboard() {
     document.getElementById('set-email').value = settings.email || '';
     document.getElementById('set-address').value = settings.address || '';
     document.getElementById('set-hours').value = settings.hours || '';
+    if (document.getElementById('set-notif-email')) {
+      document.getElementById('set-notif-email').value = settings.notifEmail || '';
+    }
+    const badge = document.getElementById('smtp-status-badge');
+    if (badge) {
+      badge.innerHTML = settings.smtpReady
+        ? `<span style="background:#dcfce7;color:#166534;padding:.2rem .75rem;border-radius:50px;font-size:.75rem;font-weight:700;"><i class="fas fa-check-circle"></i> SMTP configuré</span>`
+        : `<span style="background:#fef9c3;color:#854d0e;padding:.2rem .75rem;border-radius:50px;font-size:.75rem;font-weight:700;"><i class="fas fa-exclamation-triangle"></i> SMTP non configuré</span>`;
+    }
   } catch (error) {
     console.info('Impossible de récupérer les paramètres :', error.message);
   }
@@ -164,41 +173,54 @@ const DEVIS_STATUS = {
   refuse:   { label: 'Refusé',     cls: 'status-draft' }
 };
 
+function _devisRowHtml(d) {
+  const s = DEVIS_STATUS[d.status] || DEVIS_STATUS.nouveau;
+  return `<tr style="${d.status==='nouveau'?'font-weight:600;':''}">
+    <td><span class="status ${s.cls}"><span class="status-dot"></span>${s.label}</span></td>
+    <td>${escHtml(d.prenom+' '+d.nom)}</td>
+    <td style="font-size:.82rem;color:var(--texte-clair);">${escHtml(d.societe||'—')}</td>
+    <td><span style="background:rgba(91,45,142,.08);color:var(--violet);padding:.2rem .6rem;border-radius:50px;font-size:.78rem;font-weight:700;">${escHtml(d.service||'—')}</span></td>
+    <td style="font-size:.82rem;">${escHtml(d.budget||'—')}</td>
+    <td style="font-size:.8rem;color:var(--texte-clair);">${escHtml(formatDate(d.date))}</td>
+    <td>
+      <div class="td-actions">
+        <button class="btn btn-secondary btn-sm" onclick="openDevis('${d.id}')"><i class="fas fa-eye"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteDevis('${d.id}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </td>
+  </tr>`;
+}
+
 async function renderDevis() {
   try {
-    const devisList = await api('/devis', { method: 'GET' });
-    const tbody = document.getElementById('devis-table-body');
-    // Badge
-    const nouveaux = devisList.filter(d => d.status === 'nouveau').length;
+    _devisCache = await api('/devis', { method: 'GET' });
+    const nouveaux = _devisCache.filter(d => d.status === 'nouveau').length;
     const badge = document.getElementById('devis-badge');
     if (nouveaux > 0) { badge.textContent = nouveaux; badge.style.display = 'flex'; }
     else badge.style.display = 'none';
-    document.getElementById('stat-devis').textContent = devisList.length;
-
-    if (!devisList.length) {
-      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-file-invoice-dollar"></i><p>Aucun devis reçu.</p></div></td></tr>';
-      return;
-    }
-    tbody.innerHTML = devisList.map(d => {
-      const s = DEVIS_STATUS[d.status] || DEVIS_STATUS.nouveau;
-      return `<tr style="${d.status==='nouveau'?'font-weight:600;':''}">
-        <td><span class="status ${s.cls}"><span class="status-dot"></span>${s.label}</span></td>
-        <td>${escHtml(d.prenom+' '+d.nom)}</td>
-        <td style="font-size:.82rem;color:var(--texte-clair);">${escHtml(d.societe||'—')}</td>
-        <td><span style="background:rgba(91,45,142,.08);color:var(--violet);padding:.2rem .6rem;border-radius:50px;font-size:.78rem;font-weight:700;">${escHtml(d.service||'—')}</span></td>
-        <td style="font-size:.82rem;">${escHtml(d.budget||'—')}</td>
-        <td style="font-size:.8rem;color:var(--texte-clair);">${escHtml(formatDate(d.date))}</td>
-        <td>
-          <div class="td-actions">
-            <button class="btn btn-secondary btn-sm" onclick="openDevis('${d.id}')"><i class="fas fa-eye"></i></button>
-            <button class="btn btn-danger btn-sm" onclick="deleteDevis('${d.id}')"><i class="fas fa-trash"></i></button>
-          </div>
-        </td>
-      </tr>`;
-    }).join('');
+    document.getElementById('stat-devis').textContent = _devisCache.length;
+    _renderDevisTable(_devisCache);
   } catch (err) {
     console.error('Impossible de charger les devis :', err.message);
   }
+}
+
+function _renderDevisTable(list) {
+  const tbody = document.getElementById('devis-table-body');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-file-invoice-dollar"></i><p>Aucun devis reçu.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(_devisRowHtml).join('');
+}
+
+function filterDevis() {
+  const q = (document.getElementById('devis-search')?.value || '').toLowerCase().trim();
+  if (!q) { _renderDevisTable(_devisCache); return; }
+  const filtered = _devisCache.filter(d =>
+    [d.prenom, d.nom, d.email, d.tel, d.service, d.societe, d.pays].some(v => (v||'').toLowerCase().includes(q))
+  );
+  _renderDevisTable(filtered);
 }
 
 async function openDevis(id) {
@@ -378,34 +400,63 @@ function renderRecentContacts(contacts) {
   `).join('');
 }
 
+let _contactsCache = [];
+let _devisCache = [];
+
+function _contactRowHtml(contact) {
+  return `<tr style="${contact.status === 'new' ? 'font-weight:600;' : ''}">
+    <td>${contact.status === 'new' ? '<span class="status status-new"><span class="status-dot"></span>Nouveau</span>' : '<span class="status status-read"><span class="status-dot"></span>Lu</span>'}</td>
+    <td>${escHtml(contact.prenom + ' ' + contact.nom)}</td>
+    <td><a href="mailto:${escHtml(contact.email)}" style="color:var(--violet);">${escHtml(contact.email)}</a></td>
+    <td>${escHtml(contact.tel || '—')}</td>
+    <td>${escHtml(contact.service || '—')}</td>
+    <td style="font-size:0.8rem;color:var(--texte-clair);">${escHtml(formatDate(contact.date))}</td>
+    <td>
+      <div class="td-actions">
+        <button class="btn btn-secondary btn-sm" onclick="openContact('${contact.id}')"><i class="fas fa-eye"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteContact('${contact.id}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </td>
+  </tr>`;
+}
+
 async function renderContacts() {
   try {
-    const contacts = await getContacts();
-    const tbody = document.getElementById('contacts-table-body');
-
-    if (!contacts.length) {
-      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i><p>Aucune demande reçue.</p></div></td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = contacts.map((contact) => `
-      <tr style="${contact.status === 'new' ? 'font-weight:600;' : ''}">
-        <td>${contact.status === 'new' ? '<span class="status status-new"><span class="status-dot"></span>Nouveau</span>' : '<span class="status status-read"><span class="status-dot"></span>Lu</span>'}</td>
-        <td>${escHtml(contact.prenom + ' ' + contact.nom)}</td>
-        <td><a href="mailto:${escHtml(contact.email)}" style="color:var(--violet);">${escHtml(contact.email)}</a></td>
-        <td>${escHtml(contact.tel || '—')}</td>
-        <td>${escHtml(contact.service || '—')}</td>
-        <td style="font-size:0.8rem;color:var(--texte-clair);">${escHtml(formatDate(contact.date))}</td>
-        <td>
-          <div class="td-actions">
-            <button class="btn btn-secondary btn-sm" onclick="openContact('${contact.id}')"><i class="fas fa-eye"></i></button>
-            <button class="btn btn-danger btn-sm" onclick="deleteContact('${contact.id}')"><i class="fas fa-trash"></i></button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
+    _contactsCache = await getContacts();
+    _renderContactsTable(_contactsCache);
   } catch (error) {
     console.error('Impossible de charger les demandes :', error.message);
+  }
+}
+
+function _renderContactsTable(contacts) {
+  const tbody = document.getElementById('contacts-table-body');
+  if (!contacts.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i><p>Aucune demande reçue.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = contacts.map(_contactRowHtml).join('');
+}
+
+function filterContacts() {
+  const q = (document.getElementById('contacts-search')?.value || '').toLowerCase().trim();
+  if (!q) { _renderContactsTable(_contactsCache); return; }
+  const filtered = _contactsCache.filter(c =>
+    [c.prenom, c.nom, c.email, c.tel, c.service, c.societe, c.pays].some(v => (v||'').toLowerCase().includes(q))
+  );
+  _renderContactsTable(filtered);
+}
+
+async function markAllContactsRead() {
+  const unread = _contactsCache.filter(c => c.status === 'new');
+  if (!unread.length) { showToast('Aucun message non lu.', 'info'); return; }
+  try {
+    await Promise.all(unread.map(c => api(`/contacts/${encodeURIComponent(c.id)}/status`, { method: 'PUT', body: { status: 'read' } })));
+    await renderContacts();
+    await refreshAll();
+    showToast(`${unread.length} message(s) marqué(s) comme lu(s).`, 'success');
+  } catch (err) {
+    showToast('Erreur lors de la mise à jour.', 'error');
   }
 }
 
@@ -596,17 +647,57 @@ async function deleteArticle(id) {
 }
 
 async function saveSettings() {
-  const phone = document.getElementById('set-phone').value.trim();
-  const email = document.getElementById('set-email').value.trim();
-  const address = document.getElementById('set-address').value.trim();
-  const hours = document.getElementById('set-hours').value.trim();
+  const phone      = document.getElementById('set-phone').value.trim();
+  const email      = document.getElementById('set-email').value.trim();
+  const address    = document.getElementById('set-address').value.trim();
+  const hours      = document.getElementById('set-hours').value.trim();
+  const notifEmail = document.getElementById('set-notif-email') ? document.getElementById('set-notif-email').value.trim() : '';
 
   try {
-    await api('/settings', { method: 'POST', body: { phone, email, address, hours } });
-    alert('Paramètres enregistrés !');
+    await api('/settings', { method: 'POST', body: { phone, email, address, hours, notifEmail } });
+    showToast('Paramètres enregistrés !', 'success');
   } catch (error) {
-    alert(error.message || 'Impossible d enregistrer les paramètres.');
+    showToast(error.message || 'Impossible d\'enregistrer les paramètres.', 'error');
   }
+}
+
+async function testEmail() {
+  const btn = document.getElementById('btn-test-email');
+  const result = document.getElementById('test-email-result');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+  result.style.display = 'none';
+  try {
+    const data = await api('/test-email', { method: 'POST' });
+    result.style.display = 'block';
+    result.innerHTML = `<div style="background:#dcfce7;border:1px solid #86efac;color:#166534;padding:.75rem 1rem;border-radius:8px;font-size:.85rem;">
+      <i class="fas fa-check-circle"></i> Email de test envoyé à <strong>${escHtml(data.to)}</strong> !
+    </div>`;
+  } catch (err) {
+    result.style.display = 'block';
+    result.innerHTML = `<div style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;padding:.75rem 1rem;border-radius:8px;font-size:.85rem;">
+      <i class="fas fa-times-circle"></i> Échec : ${escHtml(err.message)}
+    </div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer un email test';
+  }
+}
+
+function showToast(message, type = 'success') {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;';
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement('div');
+  const bg = type === 'success' ? '#166534' : type === 'error' ? '#dc2626' : '#1a1a2e';
+  toast.style.cssText = `background:${bg};color:#fff;padding:.75rem 1.25rem;border-radius:10px;font-size:.85rem;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:fadeIn .3s;max-width:320px;`;
+  toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i> ${escHtml(message)}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; setTimeout(() => toast.remove(), 300); }, 3500);
 }
 
 async function changePassword() {
@@ -1124,4 +1215,17 @@ function printDevis(d) {
   win.document.open();
   win.document.write(html);
   win.document.close();
+}
+
+
+function exportCSV(type) {
+  const token = document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith('mosaic_auth='));
+  if (!token) { showToast('Non authentifié.', 'error'); return; }
+  showToast('Génération du fichier CSV...', 'info');
+  const a = document.createElement('a');
+  a.href = `/api/export/${type}`;
+  a.download = `${type}_${new Date().toISOString().split('T')[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }

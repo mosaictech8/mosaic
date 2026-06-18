@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page non trouvée — Mosaïc International</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; }
+    .page-404 {
+      flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center; padding:4rem 1.5rem;
+      background:linear-gradient(135deg, rgba(91,45,142,.05) 0%, rgba(240,165,0,.04) 100%);
+    }
+    .error-code {
+      font-size:clamp(5rem,20vw,9rem); font-weight:900; line-height:1;
+      background:linear-gradient(135deg,#5B2D8E,#F0A500);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      font-family:'Montserrat',sans-serif; margin-bottom:.5rem;
+    }
+    .error-icon { font-size:2.5rem; color:var(--or,#F0A500); margin-bottom:1rem; }
+    .error-title { font-size:1.5rem; font-weight:700; color:#1a1a2e; margin-bottom:.75rem; font-family:'Montserrat',sans-serif; }
+    .error-text { color:#6b7280; max-width:480px; margin-bottom:2.5rem; font-size:1rem; line-height:1.7; }
+    .error-actions { display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; }
+    .btn-primary-404 {
+      display:inline-flex; align-items:center; gap:.5rem; padding:.85rem 1.75rem;
+      background:linear-gradient(135deg,#5B2D8E,#3d1e62); color:#fff; border-radius:50px;
+      text-decoration:none; font-weight:700; font-size:.9rem; transition:.2s;
+    }
+    .btn-primary-404:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(91,45,142,.3); }
+    .btn-secondary-404 {
+      display:inline-flex; align-items:center; gap:.5rem; padding:.85rem 1.75rem;
+      border:2px solid #5B2D8E; color:#5B2D8E; border-radius:50px;
+      text-decoration:none; font-weight:700; font-size:.9rem; background:transparent; transition:.2s;
+    }
+    .btn-secondary-404:hover { background:#5B2D8E; color:#fff; }
+    .quick-links { margin-top:3rem; display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; }
+    .quick-link { color:#5B2D8E; text-decoration:none; font-size:.85rem; font-weight:600; }
+    .quick-link:hover { text-decoration:underline; }
+    .quick-link i { margin-right:.35rem; }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <header class="header" id="header">
+    <nav class="nav">
+      <a href="/" class="logo">
+        <span class="logo-icon"><i class="fas fa-th"></i></span>
+        <div class="logo-text">
+          <span class="logo-mosaic">MOSAÏC</span>
+          <span class="logo-international">INTERNATIONAL</span>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="/">Accueil</a>
+        <a href="a-propos.html">À propos</a>
+        <a href="actualites.html">Actualités</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="contact.html" class="nav-cta">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-404">
+    <div class="error-icon"><i class="fas fa-compass"></i></div>
+    <div class="error-code">404</div>
+    <h1 class="error-title">Page non trouvée</h1>
+    <p class="error-text">
+      La page que vous cherchez n'existe pas ou a été déplacée.<br>
+      Revenez à l'accueil pour continuer votre navigation.
+    </p>
+    <div class="error-actions">
+      <a href="/" class="btn-primary-404"><i class="fas fa-home"></i> Retour à l'accueil</a>
+      <a href="contact.html" class="btn-secondary-404"><i class="fas fa-envelope"></i> Nous contacter</a>
+    </div>
+    <div class="quick-links">
+      <a href="a-propos.html" class="quick-link"><i class="fas fa-info-circle"></i> À propos</a>
+      <a href="actualites.html" class="quick-link"><i class="fas fa-newspaper"></i> Actualités</a>
+      <a href="portfolio.html" class="quick-link"><i class="fas fa-briefcase"></i> Portfolio</a>
+      <a href="devis.html" class="quick-link"><i class="fas fa-file-invoice"></i> Demande de devis</a>
+    </div>
+  </main>
+
+  <!-- Footer minimal -->
+  <footer style="text-align:center;padding:1.5rem;background:#1a1a2e;color:rgba(255,255,255,.5);font-size:.8rem;">
+    © 2025 Mosaïc International SARL — Tous droits réservés
+  </footer>
+</body>
+</html>

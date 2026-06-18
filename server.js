@@ -108,27 +108,62 @@ const initAdminPassword = async () => {
 };
 
 /* ── Email notification ───────────────────────────────────── */
+
+/* Lit l'email de notification depuis Supabase settings, avec fallback */
+const getNotifEmail = async () => {
+  if (!supabase || !SUPABASE_URL) return CONTACT_EMAIL;
+  try {
+    const { data } = await supabase.from('settings').select('value').eq('key', 'notif_email').maybeSingle();
+    return (data?.value && data.value.trim()) ? data.value.trim() : CONTACT_EMAIL;
+  } catch { return CONTACT_EMAIL; }
+};
+
+const mailHtmlWrapper = (title, rows) => `
+<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f5f5f8;padding:20px;">
+<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+  <div style="background:linear-gradient(135deg,#5B2D8E,#3d1e62);padding:24px 28px;">
+    <h2 style="margin:0;color:#fff;font-size:1.1rem;">${title}</h2>
+    <p style="margin:6px 0 0;color:rgba(255,255,255,0.7);font-size:0.82rem;">Mosaïc International — Notification automatique</p>
+  </div>
+  <div style="padding:24px 28px;">
+    ${rows}
+    <hr style="border:none;border-top:1px solid #e0e0e8;margin:20px 0;">
+    <p style="color:#9ca3af;font-size:0.75rem;">Cet email a été envoyé automatiquement depuis le site mozaikinternational.com</p>
+  </div>
+</div></body></html>`;
+
+const mailRow = (label, value) => value
+  ? `<p style="margin:8px 0;"><b style="color:#1a1a2e;min-width:120px;display:inline-block;">${label} :</b> <span style="color:#444;">${value}</span></p>`
+  : '';
+
 const sendContactMail = async (c) => {
   if (!transporter) return;
+  const to = await getNotifEmail();
   try {
     await transporter.sendMail({
-      from: SMTP_USER || CONTACT_EMAIL,
-      to: CONTACT_EMAIL,
-      subject: `Nouvelle demande de contact de ${c.prenom} ${c.nom}`,
-      html: `
-        <h2>Nouvelle demande de contact</h2>
-        <p><b>Nom :</b> ${c.prenom} ${c.nom}</p>
-        <p><b>Email :</b> ${c.email}</p>
-        <p><b>Téléphone :</b> ${c.tel}</p>
-        <p><b>Entreprise :</b> ${c.societe}</p>
-        <p><b>Pays :</b> ${c.pays}</p>
-        <p><b>Service :</b> ${c.service}</p>
-        <p><b>Budget :</b> ${c.budget || 'Non précisé'}</p>
-        <p><b>Message :</b><br>${c.message.replace(/\n/g, '<br>')}</p>
-      `
+      from: `"Mosaïc International" <${SMTP_USER || CONTACT_EMAIL}>`,
+      to,
+      subject: `📬 Nouveau contact — ${c.prenom} ${c.nom}`,
+      html: mailHtmlWrapper('Nouvelle demande de contact', `
+        ${mailRow('Nom', `${c.prenom} ${c.nom}`)}
+        ${mailRow('Email', `<a href="mailto:${c.email}">${c.email}</a>`)}
+        ${mailRow('Téléphone', c.tel)}
+        ${mailRow('Entreprise', c.societe)}
+        ${mailRow('Pays', c.pays)}
+        ${mailRow('Service', c.service)}
+        ${mailRow('Budget', c.budget)}
+        <div style="margin-top:16px;background:#f5f5f8;border-radius:8px;padding:14px;">
+          <b style="color:#1a1a2e;">Message :</b>
+          <p style="margin:8px 0 0;color:#444;line-height:1.6;">${String(c.message).replace(/\n/g,'<br>')}</p>
+        </div>
+        <div style="margin-top:16px;">
+          <a href="https://mozaikinternational.com/admin" style="display:inline-block;background:#5B2D8E;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:0.85rem;">
+            Voir dans l'admin
+          </a>
+        </div>`)
     });
   } catch (err) {
-    console.warn('Email non envoyé :', err.message);
+    console.warn('Email contact non envoyé :', err.message);
   }
 };
 
@@ -511,10 +546,12 @@ app.get('/api/settings', requireAuth, async (req, res) => {
     sbCheck({ error }, 'GET settings');
     const s = (data || []).reduce((acc, r) => ({ ...acc, [r.key]: r.value }), {});
     return res.json({
-      phone:   s.site_phone   || '+235 62 68 68 12',
-      email:   s.site_email   || CONTACT_EMAIL,
-      address: s.site_address || "425W+W78, N'Djaména, Tchad",
-      hours:   s.site_hours   || 'Lun – Sam : 07h00 – 18h00'
+      phone:      s.site_phone   || '+235 62 68 68 12',
+      email:      s.site_email   || CONTACT_EMAIL,
+      address:    s.site_address || "425W+W78, N'Djaména, Tchad",
+      hours:      s.site_hours   || 'Lun – Sam : 07h00 – 18h00',
+      notifEmail: s.notif_email  || CONTACT_EMAIL,
+      smtpReady:  Boolean(SMTP_HOST)
     });
   } catch (err) {
     return res.status(500).json({ error: 'Impossible de charger les paramètres.' });
@@ -522,19 +559,78 @@ app.get('/api/settings', requireAuth, async (req, res) => {
 });
 
 app.post('/api/settings', requireAuth, async (req, res) => {
-  const { phone, email, address, hours } = req.body;
+  const { phone, email, address, hours, notifEmail } = req.body;
   try {
     const { error } = await supabase.from('settings').upsert([
-      { key: 'site_phone',   value: phone   || '' },
-      { key: 'site_email',   value: email   || CONTACT_EMAIL },
-      { key: 'site_address', value: address || "425W+W78, N'Djaména, Tchad" },
-      { key: 'site_hours',   value: hours   || 'Lun – Sam : 07h00 – 18h00' }
+      { key: 'site_phone',   value: phone      || '' },
+      { key: 'site_email',   value: email      || CONTACT_EMAIL },
+      { key: 'site_address', value: address    || "425W+W78, N'Djaména, Tchad" },
+      { key: 'site_hours',   value: hours      || 'Lun – Sam : 07h00 – 18h00' },
+      { key: 'notif_email',  value: notifEmail || CONTACT_EMAIL }
     ], { onConflict: 'key' });
     sbCheck({ error }, 'UPSERT settings');
     return res.json({ ok: true });
   } catch (err) {
     return res.status(500).json({ error: "Impossible d'enregistrer les paramètres." });
   }
+});
+
+/* Tester la configuration email */
+app.post('/api/test-email', requireAuth, async (req, res) => {
+  if (!transporter) return res.status(503).json({ error: 'SMTP non configuré. Ajoutez SMTP_HOST, SMTP_USER, SMTP_PASS dans les variables Vercel.' });
+  const to = await getNotifEmail();
+  try {
+    await transporter.sendMail({
+      from: `"Mosaïc International" <${SMTP_USER || CONTACT_EMAIL}>`,
+      to,
+      subject: '✅ Test email — Mosaïc International Admin',
+      html: mailHtmlWrapper('Test de configuration email', `
+        <p style="color:#166534;background:#f0fdf4;border:1px solid #bbf7d0;padding:12px;border-radius:8px;">
+          ✅ La configuration email fonctionne correctement !
+        </p>
+        ${mailRow('Envoyé à', to)}
+        ${mailRow('Serveur SMTP', SMTP_HOST)}
+        ${mailRow('Date', new Date().toLocaleString('fr-FR'))}`)
+    });
+    return res.json({ ok: true, to });
+  } catch (err) {
+    return res.status(500).json({ error: `Échec envoi : ${err.message}` });
+  }
+});
+
+/* Export CSV contacts */
+app.get('/api/export/contacts', requireAuth, async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('contacts').select('*').order('date', { ascending: false });
+    sbCheck({ error }, 'EXPORT contacts');
+    const rows = (data || []);
+    const headers = ['ID','Prénom','Nom','Email','Téléphone','Société','Pays','Service','Budget','Message','Statut','Date'];
+    const csv = [headers.join(';'),
+      ...rows.map(r => [r.id,r.prenom,r.nom,r.email,r.tel,r.societe,r.pays,r.service,r.budget,
+        (r.message||'').replace(/[\r\n;]/g,' '),r.status,r.date].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(';'))
+    ].join('\r\n');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="contacts_${Date.now()}.csv"`);
+    return res.send('﻿' + csv);
+  } catch (err) { return res.status(500).json({ error: 'Export impossible.' }); }
+});
+
+/* Export CSV devis */
+app.get('/api/export/devis', requireAuth, async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('devis').select('*').order('date', { ascending: false });
+    sbCheck({ error }, 'EXPORT devis');
+    const rows = (data || []);
+    const headers = ['ID','Prénom','Nom','Email','Téléphone','Société','Pays','Service','Budget','Délai','Origine','Destination','Volume','Description','Statut','Date'];
+    const csv = [headers.join(';'),
+      ...rows.map(r => [r.id,r.prenom,r.nom,r.email,r.tel,r.societe,r.pays,r.service,r.budget,
+        r.delai,r.origine,r.destination,r.volume,
+        (r.description||'').replace(/[\r\n;]/g,' '),r.status,r.date].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(';'))
+    ].join('\r\n');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="devis_${Date.now()}.csv"`);
+    return res.send('﻿' + csv);
+  } catch (err) { return res.status(500).json({ error: 'Export impossible.' }); }
 });
 
 app.post('/api/change-password', requireAuth, async (req, res) => {
@@ -591,26 +687,32 @@ app.post('/api/devis', async (req, res) => {
     const { error } = await supabase.from('devis').insert(row);
     sbCheck({ error }, 'INSERT devis');
     if (transporter) {
-      try {
-        await transporter.sendMail({
-          from: SMTP_USER || CONTACT_EMAIL,
-          to: CONTACT_EMAIL,
-          subject: `Nouveau devis — ${service} — ${prenom} ${nom}`,
-          html: `<h2>Nouvelle demande de devis</h2>
-            <p><b>Nom :</b> ${prenom} ${nom}</p>
-            <p><b>Email :</b> ${email}</p>
-            <p><b>Téléphone :</b> ${tel}</p>
-            <p><b>Société :</b> ${societe || '—'}</p>
-            <p><b>Pays :</b> ${pays || '—'}</p>
-            <p><b>Service :</b> ${service}</p>
-            <p><b>Budget :</b> ${budget || '—'}</p>
-            <p><b>Délai :</b> ${delai || '—'}</p>
-            <p><b>Origine :</b> ${origine || '—'}</p>
-            <p><b>Destination :</b> ${destination || '—'}</p>
-            <p><b>Volume/Quantité :</b> ${volume || '—'}</p>
-            <p><b>Description :</b><br>${description.replace(/\n/g,'<br>')}</p>`
-        });
-      } catch (e) { console.warn('Email devis non envoyé :', e.message); }
+      getNotifEmail().then(to => transporter.sendMail({
+        from: `"Mosaïc International" <${SMTP_USER || CONTACT_EMAIL}>`,
+        to,
+        subject: `📋 Nouveau devis — ${service} — ${prenom} ${nom}`,
+        html: mailHtmlWrapper('Nouvelle demande de devis', `
+          ${mailRow('Nom', `${prenom} ${nom}`)}
+          ${mailRow('Email', `<a href="mailto:${email}">${email}</a>`)}
+          ${mailRow('Téléphone', tel)}
+          ${mailRow('Société', societe)}
+          ${mailRow('Pays', pays)}
+          ${mailRow('Service', service)}
+          ${mailRow('Budget', budget)}
+          ${mailRow('Délai', delai)}
+          ${mailRow('Origine', origine)}
+          ${mailRow('Destination', destination)}
+          ${mailRow('Volume', volume)}
+          <div style="margin-top:16px;background:#f5f5f8;border-radius:8px;padding:14px;">
+            <b style="color:#1a1a2e;">Description :</b>
+            <p style="margin:8px 0 0;color:#444;line-height:1.6;">${description.replace(/\n/g,'<br>')}</p>
+          </div>
+          <div style="margin-top:16px;">
+            <a href="https://mozaikinternational.com/admin" style="display:inline-block;background:#5B2D8E;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:0.85rem;">
+              Voir dans l'admin
+            </a>
+          </div>`)
+      })).catch(e => console.warn('Email devis non envoyé :', e.message));
     }
     return res.json({ ok: true });
   } catch (err) {
@@ -748,6 +850,14 @@ app.delete('/api/portfolio/:id', requireAuth, async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: 'Impossible de supprimer le projet.' });
   }
+});
+
+/* ── Page 404 pour les routes inconnues (non-API) ─────────── */
+app.use((req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Route non trouvée.' });
+  }
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
 /* ── Démarrage ────────────────────────────────────────────── */
