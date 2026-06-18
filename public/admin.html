@@ -1033,27 +1033,33 @@
             </div>
             <div class="form-group full">
               <label>Image principale</label>
-              <div style="display:flex;gap:.75rem;align-items:flex-start;flex-wrap:wrap;">
-                <input type="url" class="form-control" id="pf-image" placeholder="https://… (URL) ou uploadez ci-dessous" style="flex:1;min-width:200px;">
-                <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">
-                  <label class="btn btn-secondary btn-sm" style="cursor:pointer;margin:0;">
-                    <i class="fas fa-upload"></i> Uploader
-                    <input type="file" accept="image/*" id="pf-image-file" style="display:none;" onchange="uploadPortfolioImage(this,'pf-image')">
-                  </label>
-                  <span id="pf-upload-status" style="font-size:.78rem;color:var(--texte-clair);"></span>
+              <label for="pf-image-file" id="pf-drop-zone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;border:2px dashed var(--gris);border-radius:10px;padding:1.5rem;cursor:pointer;transition:all .2s;background:var(--gris-clair);text-align:center;position:relative;overflow:hidden;" onmouseover="this.style.borderColor='var(--violet)';this.style.background='rgba(91,45,142,.04)'" onmouseout="this.style.borderColor='var(--gris)';this.style.background='var(--gris-clair)'">
+                <img id="pf-image-preview-img" src="" alt="" style="display:none;max-height:140px;max-width:100%;border-radius:8px;object-fit:cover;">
+                <div id="pf-drop-label">
+                  <i class="fas fa-cloud-upload-alt" style="font-size:1.8rem;color:var(--texte-clair);display:block;margin-bottom:.4rem;"></i>
+                  <span style="font-weight:600;color:var(--marine);font-size:.88rem;">Cliquez pour choisir une image</span><br>
+                  <span style="font-size:.78rem;color:var(--texte-clair);">JPG, PNG, WEBP — max 4 Mo</span>
                 </div>
+                <input type="file" accept="image/*" id="pf-image-file" style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="uploadPortfolioImage(this,'pf-image')">
+              </label>
+              <div style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem;">
+                <span style="font-size:.78rem;color:var(--texte-clair);white-space:nowrap;">ou URL :</span>
+                <input type="text" class="form-control" id="pf-image" placeholder="https://…" style="flex:1;padding:.5rem .75rem;font-size:.85rem;">
               </div>
-              <div id="pf-image-preview" style="margin-top:.5rem;display:none;">
-                <img id="pf-image-preview-img" src="" alt="" style="max-width:180px;max-height:120px;border-radius:8px;border:1px solid var(--gris);">
-              </div>
+              <span id="pf-upload-status" style="font-size:.78rem;display:block;margin-top:.3rem;"></span>
             </div>
             <div class="form-group full">
               <label>Description</label>
               <textarea class="form-control" id="pf-description" rows="3" placeholder="Décrivez le projet, les travaux réalisés, les résultats obtenus…"></textarea>
             </div>
             <div class="form-group full">
-              <label>Photos supplémentaires <span style="font-weight:400;text-transform:none;font-size:.78rem;color:var(--texte-clair);">(URLs, une par ligne)</span></label>
-              <textarea class="form-control" id="pf-gallery" rows="3" placeholder="https://…&#10;https://…&#10;https://…"></textarea>
+              <label>Photos supplémentaires <span style="font-weight:400;text-transform:none;font-size:.78rem;color:var(--texte-clair);">(galerie — uploadez plusieurs images)</span></label>
+              <label for="pf-gallery-file" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--gris-clair);border:1px solid var(--gris);border-radius:8px;padding:.45rem .9rem;cursor:pointer;font-size:.82rem;font-weight:600;margin-bottom:.5rem;transition:all .2s;" onmouseover="this.style.borderColor='var(--violet)'" onmouseout="this.style.borderColor='var(--gris)'">
+                <i class="fas fa-images"></i> Ajouter des photos de galerie
+                <input type="file" accept="image/*" id="pf-gallery-file" multiple style="display:none;" onchange="uploadGalleryImages(this)">
+              </label>
+              <span id="pf-gallery-status" style="font-size:.78rem;color:var(--texte-clair);display:block;margin-bottom:.4rem;"></span>
+              <textarea class="form-control" id="pf-gallery" rows="2" placeholder="URLs générées automatiquement après upload, ou collez des liens manuellement…" style="font-size:.8rem;"></textarea>
             </div>
           </div>
           <div class="form-actions">

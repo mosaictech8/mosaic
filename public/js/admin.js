@@ -768,7 +768,10 @@ async function openPortfolioForm(id = null) {
   card.scrollIntoView({ behavior: 'smooth' });
 
   const resetImg = () => {
-    document.getElementById('pf-image-preview').style.display = 'none';
+    const img = document.getElementById('pf-image-preview-img');
+    const lbl = document.getElementById('pf-drop-label');
+    if (img) { img.src = ''; img.style.display = 'none'; }
+    if (lbl) lbl.style.display = 'block';
     document.getElementById('pf-upload-status').textContent = '';
   };
 
@@ -792,8 +795,11 @@ async function openPortfolioForm(id = null) {
         document.getElementById('pf-gallery').value = gallery.join('\n');
       } catch { document.getElementById('pf-gallery').value = p.gallery || ''; }
       if (p.image) {
-        document.getElementById('pf-image-preview-img').src = p.image;
-        document.getElementById('pf-image-preview').style.display = 'block';
+        const img = document.getElementById('pf-image-preview-img');
+        img.src = p.image;
+        img.style.display = 'block';
+        const lbl = document.getElementById('pf-drop-label');
+        if (lbl) lbl.style.display = 'none';
       } else resetImg();
     } catch (err) {
       alert('Impossible de charger le projet.');
@@ -867,7 +873,19 @@ async function deletePortfolio(id) {
   }
 }
 
-async function uploadPortfolioImage(input, targetId) {
+async function _uploadOneImage(dataUrl) {
+  const res = await fetch('/api/upload-image', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: dataUrl })
+  });
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || 'Erreur upload');
+  return result.url;
+}
+
+async function uploadPortfolioImage(input) {
   if (!input.files || !input.files[0]) return;
   const file = input.files[0];
   if (file.size > 4 * 1024 * 1024) {
@@ -877,24 +895,19 @@ async function uploadPortfolioImage(input, targetId) {
   }
   const status = document.getElementById('pf-upload-status');
   status.textContent = 'Envoi…';
+  status.style.color = 'var(--texte-clair)';
   const reader = new FileReader();
   reader.onload = async (e) => {
     try {
-      const res = await fetch('/api/upload-image', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: e.target.result })
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || 'Erreur upload');
-      document.getElementById(targetId).value = result.url;
-      const preview = document.getElementById('pf-image-preview');
-      document.getElementById('pf-image-preview-img').src = result.url;
-      preview.style.display = 'block';
+      const url = await _uploadOneImage(e.target.result);
+      document.getElementById('pf-image').value = url;
+      const img = document.getElementById('pf-image-preview-img');
+      img.src = url;
+      img.style.display = 'block';
+      document.getElementById('pf-drop-label').style.display = 'none';
       status.textContent = 'Image uploadée !';
       status.style.color = 'var(--success)';
-      setTimeout(() => { status.textContent = ''; status.style.color = ''; }, 3000);
+      setTimeout(() => { status.textContent = ''; }, 3000);
     } catch (err) {
       alert('Impossible d\'uploader l\'image : ' + err.message);
       input.value = '';
@@ -904,16 +917,57 @@ async function uploadPortfolioImage(input, targetId) {
   reader.readAsDataURL(file);
 }
 
+async function uploadGalleryImages(input) {
+  if (!input.files || !input.files.length) return;
+  const status = document.getElementById('pf-gallery-status');
+  const gallery = document.getElementById('pf-gallery');
+  const files = Array.from(input.files);
+  const oversized = files.filter(f => f.size > 4 * 1024 * 1024);
+  if (oversized.length) {
+    alert(`${oversized.length} image(s) trop lourde(s) (max 4 Mo). Elles seront ignorées.`);
+  }
+  const valid = files.filter(f => f.size <= 4 * 1024 * 1024);
+  if (!valid.length) return;
+  status.textContent = `Envoi de ${valid.length} image(s)…`;
+  status.style.color = 'var(--texte-clair)';
+  const urls = [];
+  for (const file of valid) {
+    try {
+      const dataUrl = await new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = e => res(e.target.result);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+      const url = await _uploadOneImage(dataUrl);
+      urls.push(url);
+      status.textContent = `${urls.length}/${valid.length} envoyée(s)…`;
+    } catch (err) {
+      status.textContent = `Erreur : ${err.message}`;
+      status.style.color = 'var(--danger)';
+    }
+  }
+  const existing = gallery.value.trim();
+  gallery.value = (existing ? existing + '\n' : '') + urls.join('\n');
+  status.textContent = `${urls.length} image(s) ajoutée(s) à la galerie.`;
+  status.style.color = 'var(--success)';
+  input.value = '';
+  setTimeout(() => { status.textContent = ''; }, 4000);
+}
+
 /* Mise à jour de la prévisualisation quand l'URL est saisie manuellement */
 document.addEventListener('input', (e) => {
   if (e.target.id === 'pf-image') {
     const url = e.target.value.trim();
-    const preview = document.getElementById('pf-image-preview');
+    const img = document.getElementById('pf-image-preview-img');
+    const label = document.getElementById('pf-drop-label');
     if (url) {
-      document.getElementById('pf-image-preview-img').src = url;
-      preview.style.display = 'block';
+      img.src = url;
+      img.style.display = 'block';
+      if (label) label.style.display = 'none';
     } else {
-      preview.style.display = 'none';
+      img.style.display = 'none';
+      if (label) label.style.display = 'block';
     }
   }
 });
