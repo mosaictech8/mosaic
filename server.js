@@ -40,6 +40,7 @@ const SMTP_PORT      = Number(process.env.SMTP_PORT || 587);
 const SMTP_USER      = process.env.SMTP_USER      || '';
 const SMTP_PASS      = process.env.SMTP_PASS      || '';
 const SMTP_SECURE    = process.env.SMTP_SECURE === 'true';
+const SMTP_FROM      = process.env.SMTP_FROM      || CONTACT_EMAIL;
 
 /* ── Nodemailer ───────────────────────────────────────────── */
 const transporter = SMTP_HOST
@@ -141,7 +142,7 @@ const sendContactMail = async (c) => {
   const to = await getNotifEmail();
   try {
     await transporter.sendMail({
-      from: `"Mosaïc International" <${SMTP_USER || CONTACT_EMAIL}>`,
+      from: `"Mosaïc International" <${SMTP_FROM}>`,
       to,
       subject: `📬 Nouveau contact — ${c.prenom} ${c.nom}`,
       html: mailHtmlWrapper('Nouvelle demande de contact', `
@@ -581,7 +582,7 @@ app.post('/api/test-email', requireAuth, async (req, res) => {
   const to = await getNotifEmail();
   try {
     await transporter.sendMail({
-      from: `"Mosaïc International" <${SMTP_USER || CONTACT_EMAIL}>`,
+      from: `"Mosaïc International" <${SMTP_FROM}>`,
       to,
       subject: '✅ Test email — Mosaïc International Admin',
       html: mailHtmlWrapper('Test de configuration email', `
@@ -688,7 +689,7 @@ app.post('/api/devis', async (req, res) => {
     sbCheck({ error }, 'INSERT devis');
     if (transporter) {
       getNotifEmail().then(to => transporter.sendMail({
-        from: `"Mosaïc International" <${SMTP_USER || CONTACT_EMAIL}>`,
+        from: `"Mosaïc International" <${SMTP_FROM}>`,
         to,
         subject: `📋 Nouveau devis — ${service} — ${prenom} ${nom}`,
         html: mailHtmlWrapper('Nouvelle demande de devis', `
