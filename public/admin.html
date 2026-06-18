@@ -1174,14 +1174,28 @@
             <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Enregistrer</button>
           </div>
           <div style="background:var(--gris-clair);border-radius:8px;padding:1rem;margin-top:1.25rem;border:1px solid var(--gris);">
-            <p style="font-size:.8rem;font-weight:700;color:var(--marine);margin-bottom:.5rem;"><i class="fas fa-info-circle" style="color:var(--violet);"></i> Configuration SMTP (Vercel)</p>
-            <p style="font-size:.78rem;color:var(--texte-clair);margin:0;">Pour recevoir les emails, ajoutez ces variables dans <strong>Vercel → Settings → Environment Variables</strong> :</p>
-            <pre style="background:#1a1a2e;color:#a5f3fc;border-radius:6px;padding:.75rem;font-size:.72rem;margin-top:.5rem;overflow-x:auto;">SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=votre@gmail.com
-SMTP_PASS=xxxx xxxx xxxx xxxx  (Mot de passe d'application Gmail)
-SMTP_SECURE=false</pre>
-            <p style="font-size:.75rem;color:var(--texte-clair);margin-top:.5rem;">💡 Gmail : activez la <strong>vérification 2 étapes</strong> puis créez un <strong>mot de passe d'application</strong> dans les paramètres de sécurité Google.</p>
+            <p style="font-size:.8rem;font-weight:700;color:var(--marine);margin-bottom:.5rem;"><i class="fas fa-info-circle" style="color:var(--violet);"></i> Configuration email — Vercel</p>
+            <p style="font-size:.78rem;color:var(--texte-clair);margin:0 0 .75rem;">Ajoutez ces <strong>6 variables</strong> dans <strong>Vercel → votre projet → Settings → Environment Variables</strong>, puis redéployez :</p>
+
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:.3rem .75rem;background:#1a1a2e;border-radius:8px;padding:.85rem 1rem;font-size:.72rem;font-family:monospace;overflow-x:auto;">
+              <span style="color:#6ee7b7;">SMTP_HOST</span><span style="color:#a5f3fc;">smtp.resend.com</span>
+              <span style="color:#6ee7b7;">SMTP_PORT</span><span style="color:#a5f3fc;">465</span>
+              <span style="color:#6ee7b7;">SMTP_USER</span><span style="color:#a5f3fc;">resend</span>
+              <span style="color:#6ee7b7;">SMTP_PASS</span><span style="color:#fde68a;">re_xxxxxxxxxxxx <span style="color:#9ca3af;font-style:italic;">(votre clé API Resend)</span></span>
+              <span style="color:#6ee7b7;">SMTP_SECURE</span><span style="color:#a5f3fc;">true</span>
+              <span style="color:#6ee7b7;">SMTP_FROM</span><span style="color:#fde68a;">onboarding@resend.dev <span style="color:#9ca3af;font-style:italic;">(ou votre domaine vérifié)</span></span>
+            </div>
+
+            <div style="display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap;">
+              <div style="flex:1;min-width:200px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:.65rem .8rem;">
+                <p style="font-size:.72rem;font-weight:700;color:#1a1a2e;margin-bottom:.3rem;"><i class="fas fa-key" style="color:var(--violet);"></i> Clé API Resend</p>
+                <p style="font-size:.7rem;color:var(--texte-clair);margin:0;">Créer un compte sur <strong>resend.com</strong> → API Keys → Create API Key → copiez la clé <code style="background:#f3f4f6;padding:0 .3rem;border-radius:3px;">re_xxx…</code></p>
+              </div>
+              <div style="flex:1;min-width:200px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:.65rem .8rem;">
+                <p style="font-size:.72rem;font-weight:700;color:#1a1a2e;margin-bottom:.3rem;"><i class="fas fa-globe" style="color:var(--or);"></i> Expéditeur personnalisé</p>
+                <p style="font-size:.7rem;color:var(--texte-clair);margin:0;">Pour envoyer depuis <strong>contact@mozaikinternational.com</strong>, vérifiez votre domaine dans Resend → Domains (ajouter les DNS chez LWS).</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -1219,8 +1219,6 @@ function printDevis(d) {
 
 
 function exportCSV(type) {
-  const token = document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith('mosaic_auth='));
-  if (!token) { showToast('Non authentifié.', 'error'); return; }
   showToast('Génération du fichier CSV...', 'info');
   const a = document.createElement('a');
   a.href = `/api/export/${type}`;
