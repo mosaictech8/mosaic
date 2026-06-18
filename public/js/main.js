@@ -14,6 +14,22 @@
   });
 })();
 
+/* ── Utilitaires globaux ─────────────────────────────────── */
+const escHtml = (value) => String(value || '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;');
+
+const formatNewsDate = (value, detailed = false) => {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString('fr-FR', detailed
+    ? { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }
+    : { day: 'numeric', month: 'long', year: 'numeric' });
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -40,19 +56,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-  const escHtml = (value) => String(value || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-  const formatNewsDate = (value, detailed = false) => {
-    if (!value) return '';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
-    return date.toLocaleDateString('fr-FR', detailed
-      ? { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }
-      : { day: 'numeric', month: 'long', year: 'numeric' });
-  };
   const getPublishedNews = async () => {
     const news = await fetchPublishedNews();
     return news.sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
