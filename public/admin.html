@@ -1059,7 +1059,8 @@
                 <input type="file" accept="image/*" id="pf-gallery-file" multiple style="display:none;" onchange="uploadGalleryImages(this)">
               </label>
               <span id="pf-gallery-status" style="font-size:.78rem;color:var(--texte-clair);display:block;margin-bottom:.4rem;"></span>
-              <textarea class="form-control" id="pf-gallery" rows="2" placeholder="URLs générées automatiquement après upload, ou collez des liens manuellement…" style="font-size:.8rem;"></textarea>
+              <div id="pf-gallery-preview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.5rem;margin-bottom:.5rem;"></div>
+              <textarea class="form-control" id="pf-gallery" rows="2" placeholder="URLs des photos (une par ligne) — remplies automatiquement après upload" style="font-size:.78rem;color:var(--texte-clair);"></textarea>
             </div>
           </div>
           <div class="form-actions">

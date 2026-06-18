@@ -726,9 +726,12 @@ async function renderDynamicPortfolio() {
 
   try {
     const res = await fetch('/api/portfolio');
-    if (!res.ok) return;
+    if (!res.ok) {
+      console.warn('Portfolio API:', res.status);
+      return;
+    }
     const projects = await res.json();
-    if (!projects.length) return;
+    if (!Array.isArray(projects) || !projects.length) return;
 
     const catLabels = {
       telecom: 'Télécom', logistique: 'Transport & Logistique',

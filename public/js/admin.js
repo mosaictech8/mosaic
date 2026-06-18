@@ -794,6 +794,7 @@ async function openPortfolioForm(id = null) {
         const gallery = p.gallery ? JSON.parse(p.gallery) : [];
         document.getElementById('pf-gallery').value = gallery.join('\n');
       } catch { document.getElementById('pf-gallery').value = p.gallery || ''; }
+      renderGalleryPreview();
       if (p.image) {
         const img = document.getElementById('pf-image-preview-img');
         img.src = p.image;
@@ -814,6 +815,7 @@ async function openPortfolioForm(id = null) {
     document.getElementById('pf-status').value   = 'published';
     document.getElementById('pf-date').value     = new Date().toISOString().split('T')[0];
     resetImg();
+    renderGalleryPreview();
   }
 }
 
@@ -917,10 +919,35 @@ async function uploadPortfolioImage(input) {
   reader.readAsDataURL(file);
 }
 
+function renderGalleryPreview() {
+  const textarea = document.getElementById('pf-gallery');
+  const preview  = document.getElementById('pf-gallery-preview');
+  if (!textarea || !preview) return;
+  const urls = textarea.value.split('\n').map(u => u.trim()).filter(Boolean);
+  if (!urls.length) { preview.innerHTML = ''; return; }
+  preview.innerHTML = urls.map((url, i) => `
+    <div style="position:relative;border-radius:8px;overflow:hidden;background:var(--gris-clair);">
+      <img src="${escHtml(url)}" alt="" style="width:100%;height:80px;object-fit:cover;display:block;"
+           onerror="this.parentElement.style.display='none'">
+      <button type="button" onclick="removeGalleryImage(${i})"
+        style="position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;border:none;background:rgba(220,38,38,.85);color:#fff;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>`).join('');
+}
+
+function removeGalleryImage(idx) {
+  const textarea = document.getElementById('pf-gallery');
+  const urls = textarea.value.split('\n').map(u => u.trim()).filter(Boolean);
+  urls.splice(idx, 1);
+  textarea.value = urls.join('\n');
+  renderGalleryPreview();
+}
+
 async function uploadGalleryImages(input) {
   if (!input.files || !input.files.length) return;
   const status = document.getElementById('pf-gallery-status');
-  const gallery = document.getElementById('pf-gallery');
+  const textarea = document.getElementById('pf-gallery');
   const files = Array.from(input.files);
   const oversized = files.filter(f => f.size > 4 * 1024 * 1024);
   if (oversized.length) {
@@ -943,19 +970,20 @@ async function uploadGalleryImages(input) {
       urls.push(url);
       status.textContent = `${urls.length}/${valid.length} envoyée(s)…`;
     } catch (err) {
-      status.textContent = `Erreur : ${err.message}`;
+      status.textContent = `Erreur sur une image : ${err.message}`;
       status.style.color = 'var(--danger)';
     }
   }
-  const existing = gallery.value.trim();
-  gallery.value = (existing ? existing + '\n' : '') + urls.join('\n');
-  status.textContent = `${urls.length} image(s) ajoutée(s) à la galerie.`;
+  const existing = textarea.value.trim();
+  textarea.value = (existing ? existing + '\n' : '') + urls.join('\n');
+  renderGalleryPreview();
+  status.textContent = `${urls.length} photo(s) ajoutée(s).`;
   status.style.color = 'var(--success)';
   input.value = '';
   setTimeout(() => { status.textContent = ''; }, 4000);
 }
 
-/* Mise à jour de la prévisualisation quand l'URL est saisie manuellement */
+/* Mise à jour des prévisualisations quand l'URL est saisie manuellement */
 document.addEventListener('input', (e) => {
   if (e.target.id === 'pf-image') {
     const url = e.target.value.trim();
@@ -970,6 +998,7 @@ document.addEventListener('input', (e) => {
       if (label) label.style.display = 'block';
     }
   }
+  if (e.target.id === 'pf-gallery') renderGalleryPreview();
 });
 
 function printDevis(d) {
